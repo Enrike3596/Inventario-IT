@@ -1,0 +1,34 @@
+using System.ComponentModel.DataAnnotations;
+using Enums;
+
+namespace DTOs
+{
+    public class HistorialActivoCreateDTO
+    {
+        [Required]
+        public int IdActivo { get; set; }
+
+        [Required]
+        public int IdSalida { get; set; }
+
+        [Required(ErrorMessage = "El tipo de movimiento es obligatorio")]
+        public TipoMovimiento TipoMovimiento { get; set; }
+
+        [Required]
+        public int IdUsuarioEntrega { get; set; }
+    }
+
+    public class HistorialActivoResponseDTO
+    {
+        public int IdHistorial { get; set; }
+        public int IdActivo { get; set; }
+        public string? CodigoActivo { get; set; }
+        public string? Serial { get; set; }
+        public int IdSalida { get; set; }
+        public string? CodigoSalida { get; set; }
+        public TipoMovimiento TipoMovimiento { get; set; }
+        public DateTime FechaMovimiento { get; set; }
+        public int IdUsuarioEntrega { get; set; }
+        public string? NombreUsuarioEntrega { get; set; }
+    }
+}

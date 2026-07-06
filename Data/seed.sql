@@ -36,6 +36,19 @@ SELECT setval(pg_get_serial_sequence('"Sedes"', 'IdSede'), 5);
 -- ============================================================
 -- 3. USUARIOS
 --    Contraseña hasheada de "Admin123" (PBKDF2 SHA256)
+--    ════════════════════════════════════════════════════════
+--    CREDENCIALES DE ACCESO (todos usan: Admin123)
+--    ════════════════════════════════════════════════════════
+--    carlos.martinez@empresa.com   → Admin123  (Rol: Administrador)
+--    maria.lopez@empresa.com       → Admin123  (Rol: Técnico)
+--    juan.rodriguez@empresa.com    → Admin123  (Rol: Técnico)
+--    ana.gomez@empresa.com         → Admin123  (Rol: Usuario Final)
+--    pedro.hernandez@empresa.com   → Admin123  (Rol: Usuario Final)
+--    laura.diaz@empresa.com        → Admin123  (Rol: Usuario Final)
+--    diego.ramirez@empresa.com     → Admin123  (Rol: Usuario Final)
+--    sofia.castillo@empresa.com    → Admin123  (Rol: Auditor)
+--    andres.moreno@empresa.com     → Admin123  (Rol: Usuario Final)
+--    carolina.torres@empresa.com   → Admin123  (Rol: Usuario Final)
 -- ============================================================
 DO $$
 DECLARE

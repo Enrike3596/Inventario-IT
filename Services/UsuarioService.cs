@@ -82,14 +82,14 @@ namespace Services
 
         public async Task<TokenResponseDTO> LoginAsync(LoginDTO dto)
         {
-            var usuario = await _repo.ObtenerPorCorreoAsync(dto.Correo);
+            var usuario = await _repo.ObtenerPorCorreoAsync(dto.Email);
             if (usuario == null)
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
 
             if (usuario.EstadoUsuario != EstadoUsuario.Activo)
                 throw new UnauthorizedAccessException("El usuario se encuentra inactivo.");
 
-            if (!PasswordHelper.Verify(dto.Contraseña, usuario.Contraseña))
+            if (!PasswordHelper.Verify(dto.Password, usuario.Contraseña))
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
 
             var expira = DateTime.UtcNow.AddHours(8);
@@ -104,7 +104,7 @@ namespace Services
 
         public async Task<string> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto)
         {
-            var usuario = await _repo.ObtenerPorCorreoAsync(dto.Correo);
+            var usuario = await _repo.ObtenerPorCorreoAsync(dto.Email);
             if (usuario == null)
                 throw new KeyNotFoundException("No se encontró un usuario con ese correo.");
 

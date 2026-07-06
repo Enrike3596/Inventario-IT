@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DTOs
 {
@@ -6,10 +7,10 @@ namespace DTOs
     {
         [Required(ErrorMessage = "El correo es obligatorio")]
         [EmailAddress(ErrorMessage = "Correo inválido")]
-        public string Correo { get; set; } = null!;
+        public string Email { get; set; } = null!;
 
         [Required(ErrorMessage = "La contraseña es obligatoria")]
-        public string Contraseña { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 
     public class TokenResponseDTO
@@ -23,7 +24,7 @@ namespace DTOs
     {
         [Required(ErrorMessage = "El correo es obligatorio")]
         [EmailAddress(ErrorMessage = "Correo inválido")]
-        public string Correo { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
     }
 
     public class RestablecerContrasenaDTO
@@ -33,6 +34,7 @@ namespace DTOs
 
         [Required(ErrorMessage = "La nueva contraseña es obligatoria")]
         [MinLength(6, ErrorMessage = "Mínimo 6 caracteres")]
+        [JsonPropertyName("password")]
         public string NuevaContrasena { get; set; } = string.Empty;
     }
 }

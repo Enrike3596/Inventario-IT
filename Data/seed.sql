@@ -52,7 +52,7 @@ SELECT setval(pg_get_serial_sequence('"Sedes"', 'IdSede'), 5);
 -- ============================================================
 DO $$
 DECLARE
-    pwd_hash TEXT := 'CE6gA+q8I0FMG3VXB3RX/A==.9vqPLhFr0x9SxpDjfgKS6v5Qf40GF+pAF9e7KScVP0Y=';
+    pwd_hash TEXT := 'hQqszOD3lK2CO0RfY+inSg==.g/m0E2xkIJxdHq5X0axUWnGb+soD9SlIQmpo4ZahSGE=';
 BEGIN
 INSERT INTO "Usuarios" ("IdUsuario", "IdRol", "IdSede", "Nombre", "Correo", "Telefono", "Cargo", "Contraseña", "EstadoUsuario", "FechaCreacion") VALUES
 (1,  1, 1, 'Carlos Andrés Martínez',    'carlos.martinez@empresa.com',    '3001234567', 'Administrador de TI',        pwd_hash, 'Activo',  '2025-01-15 08:00:00'),

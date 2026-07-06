@@ -19,6 +19,7 @@ namespace Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var result = await _usuarioService.LoginAsync(dto);

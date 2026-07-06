@@ -1,6 +1,5 @@
-using System.Net;
-using System.Text.Json;
-using Helpers;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Middleware
 {
@@ -30,25 +29,29 @@ namespace Middleware
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            context.Response.ContentType = "application/json";
-
-            var (statusCode, message) = ex switch
+            var (statusCode, title, detail) = ex switch
             {
-                UnauthorizedAccessException => (HttpStatusCode.Unauthorized, ex.Message),
-                ArgumentException => (HttpStatusCode.BadRequest, ex.Message),
-                KeyNotFoundException => (HttpStatusCode.NotFound, ex.Message),
-                _ => (HttpStatusCode.InternalServerError, "Ocurrió un error interno en el servidor.")
+                UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "No autorizado", ex.Message),
+                ArgumentException => (StatusCodes.Status400BadRequest, "Solicitud inválida", ex.Message),
+                KeyNotFoundException => (StatusCodes.Status404NotFound, "Recurso no encontrado", ex.Message),
+                _ => (StatusCodes.Status500InternalServerError, "Error interno del servidor", "Ocurrió un error inesperado.")
             };
 
-            context.Response.StatusCode = (int)statusCode;
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/problem+json";
 
-            var response = ResponseHelper.Error(message);
-            var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+            var problem = new ProblemDetails
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+                Type = $"https://httpstatuses.io/{statusCode}",
+                Title = title,
+                Status = statusCode,
+                Detail = detail,
+                Instance = context.Request.Path
+            };
 
-            await context.Response.WriteAsync(json);
+            problem.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
+
+            await context.Response.WriteAsJsonAsync(problem);
         }
     }
 }

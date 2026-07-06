@@ -134,7 +134,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    DbInitializer.Initialize(db, logger);
+    DbInitializer.Initialize(db, logger, app.Environment.ContentRootPath);
 }
 
 if (app.Environment.IsDevelopment())

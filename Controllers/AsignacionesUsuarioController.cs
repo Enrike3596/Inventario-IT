@@ -60,6 +60,22 @@ namespace Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Actualizar(int id, [FromBody] AsignacionUsuarioUpdateDTO dto)
+        {
+            try
+            {
+                var data = await _service.ActualizarAsync(id, dto);
+                if (data == null)
+                    return NotFound(ResponseHelper.NotFound());
+                return Ok(ResponseHelper.Success(data, "Asignación actualizada exitosamente."));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ResponseHelper.BadRequest(ex.Message));
+            }
+        }
+
         [HttpPatch("{id}/desactivar")]
         public async Task<IActionResult> Desactivar(int id)
         {

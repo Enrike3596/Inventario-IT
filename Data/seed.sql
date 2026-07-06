@@ -14,10 +14,10 @@ BEGIN;
 -- 1. ROLES
 -- ============================================================
 INSERT INTO "Roles" ("IdRol", "Nombre", "Tipo", "Estado") VALUES
-(1, 'Administrador',     'Admin',    'Activo'),
-(2, 'Técnico',           'Tecnico',  'Activo'),
-(3, 'Usuario Final',     'Usuario',  'Activo'),
-(4, 'Auditor',           'Auditor',  'Activo');
+(1, 'Administrador',     'super_admin',    'Activo'),
+(2, 'Técnico',           'agente_soporte',  'Activo'),
+(3, 'Usuario Final',     'coordinador',     'Activo'),
+(4, 'Auditor',           'super_admin',     'Activo');
 
 SELECT setval(pg_get_serial_sequence('"Roles"', 'IdRol'), 4);
 

@@ -12,6 +12,7 @@ namespace Repositories
         Task<List<AsignacionUsuario>> ObtenerTodosAsync();
         Task<AsignacionUsuario?> ObtenerPorIdAsync(int id);
         Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion);
+        Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
         Task<AsignacionUsuario?> DesactivarAsync(int id);
         Task<bool> EliminarAsync(int id);
     }
@@ -76,6 +77,16 @@ namespace Repositories
         {
             await _context.Database.ExecuteSqlRawAsync(
                 "SELECT setval(pg_get_serial_sequence('\"AsignacionesUsuario\"', 'IdAsignacion'), (SELECT COALESCE(MAX(\"IdAsignacion\"), 0) FROM \"AsignacionesUsuario\"));");
+        }
+
+        public async Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto)
+        {
+            var asignacion = await _context.AsignacionesUsuario.FindAsync(id);
+            if (asignacion == null) return null;
+
+            asignacion.EstadoAsignacion = dto.EstadoAsignacion;
+            await _context.SaveChangesAsync();
+            return asignacion;
         }
 
         public async Task<AsignacionUsuario?> DesactivarAsync(int id)

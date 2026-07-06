@@ -15,6 +15,7 @@ namespace Repositories
         Task<Usuarios> CrearAsync(Usuarios usuario);
         Task<Usuarios?> ActualizarAsync(int id, UsuarioUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
+        Task<bool> ActualizarContrasenaAsync(int id, string nuevaContrasenaHash);
     }
 
     public class UsuarioRepository : IUsuarioRepository
@@ -136,6 +137,16 @@ namespace Repositories
             if (usuario == null) return false;
 
             usuario.EstadoUsuario = EstadoUsuario.Inactivo;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ActualizarContrasenaAsync(int id, string nuevaContrasenaHash)
+        {
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario == null) return false;
+
+            usuario.Contraseña = nuevaContrasenaHash;
             await _context.SaveChangesAsync();
             return true;
         }

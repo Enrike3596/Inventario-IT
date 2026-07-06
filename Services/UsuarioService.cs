@@ -19,6 +19,8 @@ namespace Services
         Task<UsuarioResponseDTO?> ActualizarAsync(int id, UsuarioUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
         Task<TokenResponseDTO> LoginAsync(LoginDTO dto);
+        Task<string> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto);
+        Task RestablecerContrasenaAsync(RestablecerContrasenaDTO dto);
     }
 
     public class UsuarioService : IUsuarioService
@@ -98,6 +100,77 @@ namespace Services
                 Expira = expira,
                 Usuario = MapToDTO(usuario)
             };
+        }
+
+        public async Task<string> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto)
+        {
+            var usuario = await _repo.ObtenerPorCorreoAsync(dto.Correo);
+            if (usuario == null)
+                throw new KeyNotFoundException("No se encontró un usuario con ese correo.");
+
+            if (usuario.EstadoUsuario != EstadoUsuario.Activo)
+                throw new UnauthorizedAccessException("El usuario se encuentra inactivo.");
+
+            var expira = DateTime.UtcNow.AddHours(1);
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Email, usuario.Correo),
+                new Claim("propósito", "restablecimiento_contraseña")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: expira,
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task RestablecerContrasenaAsync(RestablecerContrasenaDTO dto)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+
+            try
+            {
+                var principal = handler.ValidateToken(dto.Token, new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    IssuerSigningKey = key
+                }, out _);
+
+                var prop = principal.FindFirst("propósito")?.Value;
+                if (prop != "restablecimiento_contraseña")
+                    throw new ArgumentException("Token inválido para restablecimiento de contraseña.");
+
+                var idClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(idClaim) || !int.TryParse(idClaim, out var id))
+                    throw new ArgumentException("Token inválido.");
+
+                var hash = PasswordHelper.Hash(dto.NuevaContrasena);
+                var actualizado = await _repo.ActualizarContrasenaAsync(id, hash);
+                if (!actualizado)
+                    throw new KeyNotFoundException("Usuario no encontrado.");
+            }
+            catch (SecurityTokenException)
+            {
+                throw new ArgumentException("El token ha expirado o es inválido.");
+            }
         }
 
         private string GenerateToken(Usuarios usuario, DateTime expira)

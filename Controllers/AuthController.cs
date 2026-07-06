@@ -39,5 +39,19 @@ namespace Controllers
 
             return Ok(ResponseHelper.Success(usuario));
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> SolicitarRestablecimiento([FromBody] SolicitarRestablecimientoDTO dto)
+        {
+            var token = await _usuarioService.SolicitarRestablecimientoAsync(dto);
+            return Ok(ResponseHelper.Success(new { token }, "Si el correo existe, recibirás las instrucciones."));
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> RestablecerContrasena([FromBody] RestablecerContrasenaDTO dto)
+        {
+            await _usuarioService.RestablecerContrasenaAsync(dto);
+            return Ok(ResponseHelper.Success(null, "Contraseña restablecida correctamente."));
+        }
     }
 }

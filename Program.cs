@@ -11,6 +11,8 @@ using Repositories;
 using Services;
 
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -62,6 +64,8 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ICategoriaActivoRepository, CategoriaActivoRepository>();
 builder.Services.AddScoped<IOrdenCompraRepository, OrdenCompraRepository>();
 builder.Services.AddScoped<IActivoRepository, ActivoRepository>();
+builder.Services.AddScoped<IItemOCRepository, ItemOCRepository>();
+builder.Services.AddScoped<IDetalleItemOCRepository, DetalleItemOCRepository>();
 builder.Services.AddScoped<IParqueaderoRepository, ParqueaderoRepository>();
 builder.Services.AddScoped<ICanalRepository, CanalRepository>();
 builder.Services.AddScoped<ISalidaRepository, SalidaRepository>();
@@ -70,6 +74,8 @@ builder.Services.AddScoped<IHistorialActivoRepository, HistorialActivoRepository
 builder.Services.AddScoped<IAsignacionUsuarioRepository, AsignacionUsuarioRepository>();
 
 builder.Services.AddScoped<IActivoService, ActivoService>();
+builder.Services.AddScoped<IItemOCService, ItemOCService>();
+builder.Services.AddScoped<IDetalleItemOCService, DetalleItemOCService>();
 builder.Services.AddScoped<IAsignacionUsuarioService, AsignacionUsuarioService>();
 builder.Services.AddScoped<ICanalService, CanalService>();
 builder.Services.AddScoped<ICategoriaActivoService, CategoriaActivoService>();

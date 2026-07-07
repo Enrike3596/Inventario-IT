@@ -48,6 +48,8 @@ namespace Services
             {
                 IdCategoria = dto.IdCategoria,
                 IdOrden = dto.IdOrden,
+                IdItemOC = dto.IdItemOC,
+                IdDetalleItemOC = dto.IdDetalleItemOC,
                 CodigoActivo = dto.CodigoActivo ?? string.Empty,
                 Serial = dto.Serial,
                 Marca = dto.Marca,
@@ -82,6 +84,8 @@ namespace Services
                 NombreCategoria = a.Categoria?.Nombre,
                 IdOrden = a.IdOrden,
                 NumeroOC = a.OrdenCompra?.NumeroOC,
+                IdItemOC = a.IdItemOC,
+                IdDetalleItemOC = a.IdDetalleItemOC,
                 CodigoActivo = a.CodigoActivo,
                 Serial = a.Serial,
                 Marca = a.Marca,

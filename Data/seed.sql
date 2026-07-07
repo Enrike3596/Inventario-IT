@@ -104,55 +104,123 @@ INSERT INTO "OrdenesCompra" ("IdOrden", "NumeroOC", "Proveedor", "Total", "Obser
 SELECT setval(pg_get_serial_sequence('"OrdenesCompra"', 'IdOrden'), 10);
 
 -- ============================================================
--- 6. ACTIVOS
+-- 6. ITEMS DE ORDEN DE COMPRA
+-- ============================================================
+INSERT INTO "ItemsOC" ("IdItemOC", "IdOrden", "IdCategoria", "NombreProducto", "Marca", "Modelo", "Referencia", "Observaciones", "CantidadEsperada") VALUES
+(1,  1, 1, 'Laptop Dell Latitude 5420',          'Dell',     'Latitude 5420',       'i5-1135G7/16GB/512GB',   NULL, 8),
+(2,  2, 3, 'Monitor HP E24 G5',                   'HP',       'Monitor E24 G5',      '24" FHD IPS',            NULL, 4),
+(3,  3, 5, 'Switch Cisco Catalyst 2960-X',        'Cisco',    'Catalyst 2960-X',     '48 Puertos Gigabit',     NULL, 2),
+(4,  3, 5, 'Router Cisco ISR 1100',               'Cisco',    'ISR 1100',            'Router Gigabit',         NULL, 1),
+(5,  4, 9, 'Tablet Lenovo Tab P11',               'Lenovo',   'Tab P11',             '128GB/WiFi',             NULL, 3),
+(6,  5, 4, 'Impresora Epson WorkForce WF-7840',   'Epson',    'WorkForce WF-7840',   'Multifuncional A3',      NULL, 2),
+(7,  6, 8, 'UPS APC Smart-UPS SMT1500',           'APC',      'Smart-UPS SMT1500',   '1500VA/900W',            NULL, 2),
+(8,  7, 6, 'Kit Teclado y Mouse Dell',            'Dell',     'Teclado + Mouse',     'KB216/MS116',            NULL, 2),
+(9,  8, 2, 'Desktop HP EliteDesk 800 G6',         'HP',       'EliteDesk 800 G6',    'i7-10700/16GB/512GB',    NULL, 2),
+(10, 9, 7, 'Servidor HP ProLiant DL380 Gen10',    'HP',       'ProLiant DL380 Gen10','Xeon 16C/128GB/2TB',     NULL, 2),
+(11, 10,10,'Cámara Web Logitech C920 HD Pro',     'Logitech', 'C920 HD Pro',         'Cámara Web 1080p',       NULL, 1),
+(12, 10,10,'Headset Logitech H800 Wireless',      'Logitech', 'H800 Wireless',       'Headset Inalámbrico',    NULL, 1);
+
+SELECT setval(pg_get_serial_sequence('"ItemsOC"', 'IdItemOC'), 12);
+
+-- ============================================================
+-- 7. ACTIVOS
 --    EstadoActivo: Disponible, Asignado, EnMantenimiento, DadoDeBaja
 -- ============================================================
-INSERT INTO "Activos" ("IdActivo", "IdCategoria", "IdOrden", "CodigoActivo", "Serial", "Marca", "Modelo", "Referencia", "EstadoActivo", "FechaAdquisicion", "FechaBaja", "Observaciones") VALUES
--- Laptops Dell (OC-001)
-(1,  1, 1, 'ACT-001', 'DL-LAT-5420-001', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
-(2,  1, 1, 'ACT-002', 'DL-LAT-5420-002', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Ana Gómez'),
-(3,  1, 1, 'ACT-003', 'DL-LAT-5420-003', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Pedro Hernández'),
-(4,  1, 1, 'ACT-004', 'DL-LAT-5420-004', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Laura Díaz'),
-(5,  1, 1, 'ACT-005', 'DL-LAT-5420-005', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
--- Laptops Dell adicionales (OC-001)
-(6,  1, 1, 'ACT-006', 'DL-LAT-5420-006', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'EnMantenimiento','2025-01-15', NULL, 'Pantalla dañada - en reparación'),
-(7,  1, 1, 'ACT-007', 'DL-LAT-5420-007', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
-(8,  1, 1, 'ACT-008', 'DL-LAT-5420-008', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
--- Monitores HP (OC-002)
-(9,  3, 2, 'ACT-009', 'HP-MON-24-001',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
-(10, 3, 2, 'ACT-010', 'HP-MON-24-002',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
-(11, 3, 2, 'ACT-011', 'HP-MON-24-003',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Asignado',      '2025-01-25', NULL, 'Entregado con laptop a Ana Gómez'),
-(12, 3, 2, 'ACT-012', 'HP-MON-24-004',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
--- Switch Cisco (OC-003)
-(13, 5, 3, 'ACT-013', 'CS-CAT-2960-001', 'Cisco',   'Catalyst 2960-X',     '48 Puertos Gigabit',     'Disponible',    '2025-02-10', NULL, NULL),
-(14, 5, 3, 'ACT-014', 'CS-CAT-2960-002', 'Cisco',   'Catalyst 2960-X',     '48 Puertos Gigabit',     'Disponible',    '2025-02-10', NULL, NULL),
-(15, 5, 3, 'ACT-015', 'CS-ISR-1100-001', 'Cisco',   'ISR 1100',            'Router Gigabit',         'Disponible',    '2025-02-10', NULL, NULL),
--- Tablets Lenovo (OC-004)
-(16, 9, 4, 'ACT-016', 'LEN-TAB-P11-001', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Asignado',      '2025-02-20', NULL, 'Asignado a Diego Ramírez'),
-(17, 9, 4, 'ACT-017', 'LEN-TAB-P11-002', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Disponible',    '2025-02-20', NULL, NULL),
-(18, 9, 4, 'ACT-018', 'LEN-TAB-P11-003', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Disponible',    '2025-02-20', NULL, NULL),
--- Impresoras Epson (OC-005)
-(19, 4, 5, 'ACT-019', 'EPS-WF-7840-001', 'Epson',   'WorkForce WF-7840',   'Multifuncional A3',      'Disponible',    '2025-03-05', NULL, NULL),
-(20, 4, 5, 'ACT-020', 'EPS-WF-7840-002', 'Epson',   'WorkForce WF-7840',   'Multifuncional A3',      'Disponible',    '2025-03-05', NULL, NULL),
--- UPS APC (OC-006)
-(21, 8, 6, 'ACT-021', 'APC-SMT-1500-001','APC',     'Smart-UPS SMT1500',   '1500VA/900W',            'Disponible',    '2025-03-15', NULL, 'UPS para rack servidores'),
-(22, 8, 6, 'ACT-022', 'APC-SMT-1500-002','APC',     'Smart-UPS SMT1500',   '1500VA/900W',            'Disponible',    '2025-03-15', NULL, 'UPS para rack servidores'),
--- Servidores HP (OC-009)
-(23, 7, 9, 'ACT-023', 'HP-DL-380-001',   'HP',      'ProLiant DL380 Gen10','Xeon 16C/128GB/2TB',     'Disponible',    '2025-04-15', NULL, 'Servidor principal - Datacenter'),
-(24, 7, 9, 'ACT-024', 'HP-DL-380-002',   'HP',      'ProLiant DL380 Gen10','Xeon 16C/128GB/2TB',     'Disponible',    '2025-04-15', NULL, 'Servidor respaldo - Datacenter'),
--- Desktop HP
-(25, 2, 8, 'ACT-025', 'HP-DT-ELITE-001', 'HP',      'EliteDesk 800 G6',    'i7-10700/16GB/512GB',    'Disponible',    '2025-04-20', NULL, NULL),
-(26, 2, 8, 'ACT-026', 'HP-DT-ELITE-002', 'HP',      'EliteDesk 800 G6',    'i7-10700/16GB/512GB',    'DadoDeBaja',    '2023-11-15', '2025-05-01', 'Dañado por descarga eléctrica'),
--- Periféricos (OC-007 y OC-010)
-(27, 6, 7, 'ACT-027', 'DL-KB-MOUSE-001', 'Dell',    'Teclado + Mouse',     'KB216/MS116',            'Disponible',    '2025-03-25', NULL, NULL),
-(28, 6, 7, 'ACT-028', 'DL-KB-MOUSE-002', 'Dell',    'Teclado + Mouse',     'KB216/MS116',            'Disponible',    '2025-03-25', NULL, NULL),
-(29, 10,10,'ACT-029', 'LOG-C920-001',    'Logitech','C920 HD Pro',         'Cámara Web 1080p',       'Disponible',    '2025-05-10', NULL, NULL),
-(30, 10,10,'ACT-030', 'LOG-H800-001',    'Logitech','H800 Wireless',       'Headset Inalámbrico',    'Disponible',    '2025-05-10', NULL, NULL);
+INSERT INTO "Activos" ("IdActivo", "IdCategoria", "IdOrden", "IdItemOC", "IdDetalleItemOC", "CodigoActivo", "Serial", "Marca", "Modelo", "Referencia", "EstadoActivo", "FechaAdquisicion", "FechaBaja", "Observaciones") VALUES
+-- Laptops Dell (OC-001 / ItemOC 1)
+(1,  1, 1, 1, 1, 'ACT-001', 'DL-LAT-5420-001', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
+(2,  1, 1, 1, 2, 'ACT-002', 'DL-LAT-5420-002', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Ana Gómez'),
+(3,  1, 1, 1, 3, 'ACT-003', 'DL-LAT-5420-003', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Pedro Hernández'),
+(4,  1, 1, 1, 4, 'ACT-004', 'DL-LAT-5420-004', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Laura Díaz'),
+(5,  1, 1, 1, 5, 'ACT-005', 'DL-LAT-5420-005', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
+(6,  1, 1, 1, 6, 'ACT-006', 'DL-LAT-5420-006', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'EnMantenimiento','2025-01-15', NULL, 'Pantalla dañada - en reparación'),
+(7,  1, 1, 1, 7, 'ACT-007', 'DL-LAT-5420-007', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
+(8,  1, 1, 1, 8, 'ACT-008', 'DL-LAT-5420-008', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL),
+-- Monitores HP (OC-002 / ItemOC 2)
+(9,  3, 2, 2, 9, 'ACT-009', 'HP-MON-24-001',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
+(10, 3, 2, 2, 10,'ACT-010', 'HP-MON-24-002',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
+(11, 3, 2, 2, 11,'ACT-011', 'HP-MON-24-003',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Asignado',      '2025-01-25', NULL, 'Entregado con laptop a Ana Gómez'),
+(12, 3, 2, 2, 12,'ACT-012', 'HP-MON-24-004',   'HP',      'Monitor E24 G5',      '24" FHD IPS',            'Disponible',    '2025-01-25', NULL, NULL),
+-- Switch / Router Cisco (OC-003 / ItemOC 3 y 4)
+(13, 5, 3, 3, 13,'ACT-013', 'CS-CAT-2960-001', 'Cisco',   'Catalyst 2960-X',     '48 Puertos Gigabit',     'Disponible',    '2025-02-10', NULL, NULL),
+(14, 5, 3, 3, 14,'ACT-014', 'CS-CAT-2960-002', 'Cisco',   'Catalyst 2960-X',     '48 Puertos Gigabit',     'Disponible',    '2025-02-10', NULL, NULL),
+(15, 5, 3, 4, 15,'ACT-015', 'CS-ISR-1100-001', 'Cisco',   'ISR 1100',            'Router Gigabit',         'Disponible',    '2025-02-10', NULL, NULL),
+-- Tablets Lenovo (OC-004 / ItemOC 5)
+(16, 9, 4, 5, 16,'ACT-016', 'LEN-TAB-P11-001', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Asignado',      '2025-02-20', NULL, 'Asignado a Diego Ramírez'),
+(17, 9, 4, 5, 17,'ACT-017', 'LEN-TAB-P11-002', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Disponible',    '2025-02-20', NULL, NULL),
+(18, 9, 4, 5, 18,'ACT-018', 'LEN-TAB-P11-003', 'Lenovo',  'Tab P11',             '128GB/WiFi',             'Disponible',    '2025-02-20', NULL, NULL),
+-- Impresoras Epson (OC-005 / ItemOC 6)
+(19, 4, 5, 6, 19,'ACT-019', 'EPS-WF-7840-001', 'Epson',   'WorkForce WF-7840',   'Multifuncional A3',      'Disponible',    '2025-03-05', NULL, NULL),
+(20, 4, 5, 6, 20,'ACT-020', 'EPS-WF-7840-002', 'Epson',   'WorkForce WF-7840',   'Multifuncional A3',      'Disponible',    '2025-03-05', NULL, NULL),
+-- UPS APC (OC-006 / ItemOC 7)
+(21, 8, 6, 7, 21,'ACT-021', 'APC-SMT-1500-001','APC',     'Smart-UPS SMT1500',   '1500VA/900W',            'Disponible',    '2025-03-15', NULL, 'UPS para rack servidores'),
+(22, 8, 6, 7, 22,'ACT-022', 'APC-SMT-1500-002','APC',     'Smart-UPS SMT1500',   '1500VA/900W',            'Disponible',    '2025-03-15', NULL, 'UPS para rack servidores'),
+-- Servidores HP (OC-009 / ItemOC 10)
+(23, 7, 9, 10,23,'ACT-023', 'HP-DL-380-001',   'HP',      'ProLiant DL380 Gen10','Xeon 16C/128GB/2TB',     'Disponible',    '2025-04-15', NULL, 'Servidor principal - Datacenter'),
+(24, 7, 9, 10,24,'ACT-024', 'HP-DL-380-002',   'HP',      'ProLiant DL380 Gen10','Xeon 16C/128GB/2TB',     'Disponible',    '2025-04-15', NULL, 'Servidor respaldo - Datacenter'),
+-- Desktop HP (OC-008 / ItemOC 9)
+(25, 2, 8, 9, 25,'ACT-025', 'HP-DT-ELITE-001', 'HP',      'EliteDesk 800 G6',    'i7-10700/16GB/512GB',    'Disponible',    '2025-04-20', NULL, NULL),
+(26, 2, 8, 9, 26,'ACT-026', 'HP-DT-ELITE-002', 'HP',      'EliteDesk 800 G6',    'i7-10700/16GB/512GB',    'DadoDeBaja',    '2023-11-15', '2025-05-01', 'Dañado por descarga eléctrica'),
+-- Periféricos (OC-007 / ItemOC 8)
+(27, 6, 7, 8, 27,'ACT-027', 'DL-KB-MOUSE-001', 'Dell',    'Teclado + Mouse',     'KB216/MS116',            'Disponible',    '2025-03-25', NULL, NULL),
+(28, 6, 7, 8, 28,'ACT-028', 'DL-KB-MOUSE-002', 'Dell',    'Teclado + Mouse',     'KB216/MS116',            'Disponible',    '2025-03-25', NULL, NULL),
+-- Periféricos (OC-010 / ItemOC 11 y 12)
+(29, 10,10,11,29,'ACT-029', 'LOG-C920-001',    'Logitech','C920 HD Pro',         'Cámara Web 1080p',       'Disponible',    '2025-05-10', NULL, NULL),
+(30, 10,10,12,30,'ACT-030', 'LOG-H800-001',    'Logitech','H800 Wireless',       'Headset Inalámbrico',    'Disponible',    '2025-05-10', NULL, NULL);
 
 SELECT setval(pg_get_serial_sequence('"Activos"', 'IdActivo'), 30);
 
 -- ============================================================
--- 7. PARQUEADEROS
+-- 8. DETALLES DE ITEM OC (uno por cada activo existente)
+-- ============================================================
+INSERT INTO "DetallesItemOC" ("IdDetalleItemOC", "IdItemOC", "Serial", "Procesado", "IdActivo", "Observaciones") VALUES
+-- ItemOC 1 - Laptops Dell (8 activos)
+(1,  1, 'DL-LAT-5420-001', true, 1,  NULL),
+(2,  1, 'DL-LAT-5420-002', true, 2,  NULL),
+(3,  1, 'DL-LAT-5420-003', true, 3,  NULL),
+(4,  1, 'DL-LAT-5420-004', true, 4,  NULL),
+(5,  1, 'DL-LAT-5420-005', true, 5,  NULL),
+(6,  1, 'DL-LAT-5420-006', true, 6,  NULL),
+(7,  1, 'DL-LAT-5420-007', true, 7,  NULL),
+(8,  1, 'DL-LAT-5420-008', true, 8,  NULL),
+-- ItemOC 2 - Monitores HP (4 activos)
+(9,  2, 'HP-MON-24-001',   true, 9,  NULL),
+(10, 2, 'HP-MON-24-002',   true, 10, NULL),
+(11, 2, 'HP-MON-24-003',   true, 11, NULL),
+(12, 2, 'HP-MON-24-004',   true, 12, NULL),
+-- ItemOC 3 - Switch Cisco (2 activos)
+(13, 3, 'CS-CAT-2960-001', true, 13, NULL),
+(14, 3, 'CS-CAT-2960-002', true, 14, NULL),
+-- ItemOC 4 - Router Cisco (1 activo)
+(15, 4, 'CS-ISR-1100-001', true, 15, NULL),
+-- ItemOC 5 - Tablets Lenovo (3 activos)
+(16, 5, 'LEN-TAB-P11-001', true, 16, NULL),
+(17, 5, 'LEN-TAB-P11-002', true, 17, NULL),
+(18, 5, 'LEN-TAB-P11-003', true, 18, NULL),
+-- ItemOC 6 - Impresoras Epson (2 activos)
+(19, 6, 'EPS-WF-7840-001', true, 19, NULL),
+(20, 6, 'EPS-WF-7840-002', true, 20, NULL),
+-- ItemOC 7 - UPS APC (2 activos)
+(21, 7, 'APC-SMT-1500-001', true, 21, NULL),
+(22, 7, 'APC-SMT-1500-002', true, 22, NULL),
+-- ItemOC 10 - Servidores HP (2 activos)
+(23, 10,'HP-DL-380-001',   true, 23, NULL),
+(24, 10,'HP-DL-380-002',   true, 24, NULL),
+-- ItemOC 9 - Desktop HP (2 activos)
+(25, 9, 'HP-DT-ELITE-001', true, 25, NULL),
+(26, 9, 'HP-DT-ELITE-002', true, 26, NULL),
+-- ItemOC 8 - Kit Teclado+Mouse Dell (2 activos)
+(27, 8, 'DL-KB-MOUSE-001', true, 27, NULL),
+(28, 8, 'DL-KB-MOUSE-002', true, 28, NULL),
+-- ItemOC 11 - Cámara Logitech (1 activo)
+(29, 11,'LOG-C920-001',    true, 29, NULL),
+-- ItemOC 12 - Headset Logitech (1 activo)
+(30, 12,'LOG-H800-001',    true, 30, NULL);
+
+SELECT setval(pg_get_serial_sequence('"DetallesItemOC"', 'IdDetalleItemOC'), 30);
+
+-- ============================================================
+-- 9. PARQUEADEROS
 -- ============================================================
 INSERT INTO "Parqueaderos" ("IdParqueadero", "IdSede", "Nombre", "Ubicacion", "Estado") VALUES
 (1, 1, 'Parqueadero Principal',  'Sótano 1 - Puesto 1-20', 'Activo'),
@@ -163,7 +231,7 @@ INSERT INTO "Parqueaderos" ("IdParqueadero", "IdSede", "Nombre", "Ubicacion", "E
 SELECT setval(pg_get_serial_sequence('"Parqueaderos"', 'IdParqueadero'), 4);
 
 -- ============================================================
--- 8. CANALES DE SOLICITUD
+-- 10. CANALES DE SOLICITUD
 -- ============================================================
 INSERT INTO "Canales" ("IdCanal", "Nombre", "FechaSolicitud") VALUES
 (1, 'Correo Electrónico', '2025-01-01 00:00:00'),
@@ -175,7 +243,7 @@ INSERT INTO "Canales" ("IdCanal", "Nombre", "FechaSolicitud") VALUES
 SELECT setval(pg_get_serial_sequence('"Canales"', 'IdCanal'), 5);
 
 -- ============================================================
--- 9. SALIDAS
+-- 11. SALIDAS
 --    CodigoUnico formato: SAL-YYYYMMDD-NNNNNN
 -- ============================================================
 INSERT INTO "Salidas" ("IdSalida", "IdCanal", "CodigoUnico", "NumeroTicket", "IdUsuarioDestino", "IdParqueaderoDestino", "IdUsuarioEntrega", "FechaSalida", "RegistroSalida", "Observaciones") VALUES
@@ -189,7 +257,7 @@ INSERT INTO "Salidas" ("IdSalida", "IdCanal", "CodigoUnico", "NumeroTicket", "Id
 SELECT setval(pg_get_serial_sequence('"Salidas"', 'IdSalida'), 6);
 
 -- ============================================================
--- 10. DETALLES DE SALIDA
+-- 12. DETALLES DE SALIDA
 -- ============================================================
 INSERT INTO "DetallesSalida" ("IdDetalleSalida", "IdSalida", "IdActivo", "Cantidad") VALUES
 -- Salida 1: Laptop + Monitor para Ana Gómez
@@ -209,7 +277,7 @@ INSERT INTO "DetallesSalida" ("IdDetalleSalida", "IdSalida", "IdActivo", "Cantid
 SELECT setval(pg_get_serial_sequence('"DetallesSalida"', 'IdDetalleSalida'), 7);
 
 -- ============================================================
--- 11. ASIGNACIONES DE USUARIO
+-- 13. ASIGNACIONES DE USUARIO
 --    EstadoAsignacion: Activa, Finalizada
 -- ============================================================
 INSERT INTO "AsignacionesUsuario" ("IdAsignacion", "IdActivo", "IdUsuarioDestino", "IdParqueadero", "FechaAsignacion", "EstadoAsignacion") VALUES
@@ -223,7 +291,7 @@ INSERT INTO "AsignacionesUsuario" ("IdAsignacion", "IdActivo", "IdUsuarioDestino
 SELECT setval(pg_get_serial_sequence('"AsignacionesUsuario"', 'IdAsignacion'), 6);
 
 -- ============================================================
--- 12. HISTORIAL DE ACTIVOS
+-- 14. HISTORIAL DE ACTIVOS
 --    TipoMovimiento: Entrada, Salida, Asignacion, Devolucion
 -- ============================================================
 INSERT INTO "HistorialActivos" ("IdHistorial", "IdActivo", "IdSalida", "TipoMovimiento", "FechaMovimiento", "IdUsuarioEntrega") VALUES
@@ -258,7 +326,11 @@ SELECT 'CategoriasActivo', COUNT(*) FROM "CategoriasActivo"
 UNION ALL
 SELECT 'OrdenesCompra', COUNT(*) FROM "OrdenesCompra"
 UNION ALL
+SELECT 'ItemsOC', COUNT(*) FROM "ItemsOC"
+UNION ALL
 SELECT 'Activos', COUNT(*) FROM "Activos"
+UNION ALL
+SELECT 'DetallesItemOC', COUNT(*) FROM "DetallesItemOC"
 UNION ALL
 SELECT 'Parqueaderos', COUNT(*) FROM "Parqueaderos"
 UNION ALL

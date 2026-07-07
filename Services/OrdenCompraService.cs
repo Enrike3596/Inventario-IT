@@ -8,9 +8,11 @@ namespace Services
     {
         Task<List<OrdenCompraResponseDTO>> ObtenerTodosAsync();
         Task<OrdenCompraResponseDTO?> ObtenerPorIdAsync(int id);
+        Task<OrdenCompraDetailDTO?> ObtenerDetalleAsync(int id);
         Task<OrdenCompraResponseDTO> CrearAsync(OrdenCompraCreateDTO dto);
         Task<OrdenCompraResponseDTO?> ActualizarAsync(int id, OrdenCompraUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
+        Task<List<ActivoResponseDTO>> ConfirmarIngresoAsync(int idOrden);
     }
 
     public class OrdenCompraService : IOrdenCompraService
@@ -32,6 +34,12 @@ namespace Services
         {
             var orden = await _repo.ObtenerPorIdAsync(id);
             return orden == null ? null : MapToDTO(orden);
+        }
+
+        public async Task<OrdenCompraDetailDTO?> ObtenerDetalleAsync(int id)
+        {
+            var orden = await _repo.ObtenerConItemsAsync(id);
+            return orden == null ? null : MapToDetailDTO(orden);
         }
 
         public async Task<OrdenCompraResponseDTO> CrearAsync(OrdenCompraCreateDTO dto)
@@ -59,6 +67,30 @@ namespace Services
             return await _repo.EliminarAsync(id);
         }
 
+        public async Task<List<ActivoResponseDTO>> ConfirmarIngresoAsync(int idOrden)
+        {
+            var activos = await _repo.ConfirmarIngresoAsync(idOrden);
+            return activos.Select(a => new ActivoResponseDTO
+            {
+                IdActivo = a.IdActivo,
+                IdCategoria = a.IdCategoria,
+                NombreCategoria = a.Categoria?.Nombre,
+                IdOrden = a.IdOrden,
+                NumeroOC = a.OrdenCompra?.NumeroOC,
+                IdItemOC = a.IdItemOC,
+                IdDetalleItemOC = a.IdDetalleItemOC,
+                CodigoActivo = a.CodigoActivo,
+                Serial = a.Serial,
+                Marca = a.Marca,
+                Modelo = a.Modelo,
+                Referencia = a.Referencia,
+                EstadoActivo = a.EstadoActivo,
+                FechaAdquisicion = a.FechaAdquisicion,
+                FechaBaja = a.FechaBaja,
+                Observaciones = a.Observaciones
+            }).ToList();
+        }
+
         private static OrdenCompraResponseDTO MapToDTO(OrdenCompra o)
         {
             return new OrdenCompraResponseDTO
@@ -68,7 +100,68 @@ namespace Services
                 Proveedor = o.Proveedor,
                 Total = o.Total,
                 Observaciones = o.Observaciones,
-                FechaCompra = o.FechaCompra
+                FechaCompra = o.FechaCompra,
+                ItemsOC = o.ItemsOC?.Select(i => new ItemOCResponseDTO
+                {
+                    IdItemOC = i.IdItemOC,
+                    IdOrden = i.IdOrden,
+                    IdCategoria = i.IdCategoria,
+                    NombreCategoria = i.Categoria?.Nombre,
+                    NombreProducto = i.NombreProducto,
+                    Marca = i.Marca,
+                    Modelo = i.Modelo,
+                    Referencia = i.Referencia,
+                    Observaciones = i.Observaciones,
+                    CantidadEsperada = i.CantidadEsperada,
+                    CantidadIngresada = i.DetallesItem?.Count(d => d.Procesado) ?? 0,
+                    DetallesItem = i.DetallesItem?.Select(d => new DetalleItemOCResponseDTO
+                    {
+                        IdDetalleItemOC = d.IdDetalleItemOC,
+                        IdItemOC = d.IdItemOC,
+                        Serial = d.Serial,
+                        Procesado = d.Procesado,
+                        IdActivo = d.IdActivo,
+                        CodigoActivo = d.Activo?.CodigoActivo,
+                        Observaciones = d.Observaciones
+                    }).ToList() ?? new()
+                }).ToList() ?? new()
+            };
+        }
+
+        private static OrdenCompraDetailDTO MapToDetailDTO(OrdenCompra o)
+        {
+            return new OrdenCompraDetailDTO
+            {
+                IdOrden = o.IdOrden,
+                NumeroOC = o.NumeroOC,
+                Proveedor = o.Proveedor,
+                Total = o.Total,
+                Observaciones = o.Observaciones,
+                FechaCompra = o.FechaCompra,
+                ItemsOC = o.ItemsOC?.Select(i => new ItemOCResponseDTO
+                {
+                    IdItemOC = i.IdItemOC,
+                    IdOrden = i.IdOrden,
+                    IdCategoria = i.IdCategoria,
+                    NombreCategoria = i.Categoria?.Nombre,
+                    NombreProducto = i.NombreProducto,
+                    Marca = i.Marca,
+                    Modelo = i.Modelo,
+                    Referencia = i.Referencia,
+                    Observaciones = i.Observaciones,
+                    CantidadEsperada = i.CantidadEsperada,
+                    CantidadIngresada = i.DetallesItem?.Count(d => d.Procesado) ?? 0,
+                    DetallesItem = i.DetallesItem?.Select(d => new DetalleItemOCResponseDTO
+                    {
+                        IdDetalleItemOC = d.IdDetalleItemOC,
+                        IdItemOC = d.IdItemOC,
+                        Serial = d.Serial,
+                        Procesado = d.Procesado,
+                        IdActivo = d.IdActivo,
+                        CodigoActivo = d.Activo?.CodigoActivo,
+                        Observaciones = d.Observaciones
+                    }).ToList() ?? new()
+                }).ToList() ?? new()
             };
         }
     }

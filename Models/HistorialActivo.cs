@@ -16,7 +16,7 @@ namespace Models
         public int IdSalida { get; set; }
 
         public TipoMovimiento TipoMovimiento { get; set; }
-        public DateTime FechaMovimiento { get; set; } = DateTime.Now;
+        public DateTime FechaMovimiento { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UsuarioEntrega")]
         public int IdUsuarioEntrega { get; set; }

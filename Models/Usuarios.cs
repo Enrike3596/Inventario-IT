@@ -20,7 +20,7 @@ namespace Models
         public string Cargo { get; set; } = null!;
         public string Contraseña { get; set; } = null!;
         public EstadoUsuario EstadoUsuario { get; set; } = EstadoUsuario.Activo;
-        public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
         public virtual Roles Rol { get; set; } = null!;
         public virtual Sedes Sede { get; set; } = null!;

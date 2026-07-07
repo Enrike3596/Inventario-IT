@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lcuellar\\Documents\\Enrique\\Inventario-IT\\HelpDesk.API.csproj": {}
+    "C:\\Users\\Enrique Velasquez\\Documents\\Enrique\\Inventario-IT\\Inventario-TI.API\\HelpDesk.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lcuellar\\Documents\\Enrique\\Inventario-IT\\HelpDesk.API.csproj": {
+    "C:\\Users\\Enrique Velasquez\\Documents\\Enrique\\Inventario-IT\\Inventario-TI.API\\HelpDesk.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lcuellar\\Documents\\Enrique\\Inventario-IT\\HelpDesk.API.csproj",
+        "projectUniqueName": "C:\\Users\\Enrique Velasquez\\Documents\\Enrique\\Inventario-IT\\Inventario-TI.API\\HelpDesk.API.csproj",
         "projectName": "HelpDesk.API",
-        "projectPath": "C:\\Users\\lcuellar\\Documents\\Enrique\\Inventario-IT\\HelpDesk.API.csproj",
-        "packagesPath": "C:\\Users\\lcuellar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lcuellar\\Documents\\Enrique\\Inventario-IT\\obj\\",
+        "projectPath": "C:\\Users\\Enrique Velasquez\\Documents\\Enrique\\Inventario-IT\\Inventario-TI.API\\HelpDesk.API.csproj",
+        "packagesPath": "C:\\Users\\Enrique Velasquez\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Enrique Velasquez\\Documents\\Enrique\\Inventario-IT\\Inventario-TI.API\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\lcuellar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Enrique Velasquez\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -94,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

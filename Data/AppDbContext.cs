@@ -16,6 +16,8 @@ namespace Data
         public DbSet<OrdenCompra> OrdenesCompra { get; set; }
         public DbSet<CategoriaActivo> CategoriasActivo { get; set; }
         public DbSet<Activos> Activos { get; set; }
+        public DbSet<ItemOC> ItemsOC { get; set; }
+        public DbSet<DetalleItemOC> DetallesItemOC { get; set; }
         public DbSet<Parqueadero> Parqueaderos { get; set; }
         public DbSet<Salida> Salidas { get; set; }
         public DbSet<Canal> Canales { get; set; }
@@ -178,7 +180,7 @@ namespace Data
             // Relaciones Activos -> OrdenCompra
             modelBuilder.Entity<Activos>()
                 .HasOne(a => a.OrdenCompra)
-                .WithMany(o => o.Activos)
+                .WithMany()
                 .HasForeignKey(a => a.IdOrden)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -222,6 +224,48 @@ namespace Data
                 .HasOne(h => h.UsuarioEntrega)
                 .WithMany()
                 .HasForeignKey(h => h.IdUsuarioEntrega)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones ItemOC -> OrdenCompra
+            modelBuilder.Entity<ItemOC>()
+                .HasOne(i => i.OrdenCompra)
+                .WithMany(o => o.ItemsOC)
+                .HasForeignKey(i => i.IdOrden)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones ItemOC -> Categoria
+            modelBuilder.Entity<ItemOC>()
+                .HasOne(i => i.Categoria)
+                .WithMany(c => c.ItemsOC)
+                .HasForeignKey(i => i.IdCategoria)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones DetalleItemOC -> ItemOC
+            modelBuilder.Entity<DetalleItemOC>()
+                .HasOne(d => d.ItemOC)
+                .WithMany(i => i.DetallesItem)
+                .HasForeignKey(d => d.IdItemOC)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relaciones DetalleItemOC -> Activo (opcional)
+            modelBuilder.Entity<DetalleItemOC>()
+                .HasOne(d => d.Activo)
+                .WithMany()
+                .HasForeignKey(d => d.IdActivo)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Relaciones Activos -> ItemOC
+            modelBuilder.Entity<Activos>()
+                .HasOne(a => a.ItemOC)
+                .WithMany(i => i.Activos)
+                .HasForeignKey(a => a.IdItemOC)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones Activos -> DetalleItemOC
+            modelBuilder.Entity<Activos>()
+                .HasOne(a => a.DetalleItemOC)
+                .WithMany()
+                .HasForeignKey(a => a.IdDetalleItemOC)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones Parqueadero -> Sede

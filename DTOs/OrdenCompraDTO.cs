@@ -10,11 +10,10 @@ namespace DTOs
         [Required(ErrorMessage = "El proveedor es obligatorio")]
         public string Proveedor { get; set; } = null!;
 
-        [Required(ErrorMessage = "El total es obligatorio")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "El total debe ser mayor a 0")]
+        [Range(0, double.MaxValue, ErrorMessage = "El total debe ser mayor o igual a 0")]
         public decimal Total { get; set; }
 
-        public string Observaciones { get; set; } = null!;
+        public string? Observaciones { get; set; }
     }
 
     public class OrdenCompraUpdateDTO
@@ -25,11 +24,10 @@ namespace DTOs
         [Required(ErrorMessage = "El proveedor es obligatorio")]
         public string Proveedor { get; set; } = null!;
 
-        [Required(ErrorMessage = "El total es obligatorio")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "El total debe ser mayor a 0")]
+        [Range(0, double.MaxValue, ErrorMessage = "El total debe ser mayor o igual a 0")]
         public decimal Total { get; set; }
 
-        public string Observaciones { get; set; } = null!;
+        public string? Observaciones { get; set; }
     }
 
     public class OrdenCompraResponseDTO
@@ -38,7 +36,19 @@ namespace DTOs
         public string NumeroOC { get; set; } = null!;
         public string Proveedor { get; set; } = null!;
         public decimal Total { get; set; }
+        public string? Observaciones { get; set; }
+        public DateTime FechaCompra { get; set; }
+        public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
+    }
+
+    public class OrdenCompraDetailDTO
+    {
+        public int IdOrden { get; set; }
+        public string NumeroOC { get; set; } = null!;
+        public string Proveedor { get; set; } = null!;
+        public decimal Total { get; set; }
         public string Observaciones { get; set; } = null!;
         public DateTime FechaCompra { get; set; }
+        public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
     }
 }

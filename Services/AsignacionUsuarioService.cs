@@ -43,7 +43,7 @@ namespace Services
                 IdActivo = dto.IdActivo,
                 IdUsuarioDestino = dto.IdUsuarioDestino,
                 IdParqueadero = dto.IdParqueadero,
-                FechaAsignacion = DateTime.Now,
+                FechaAsignacion = DateTime.UtcNow,
                 EstadoAsignacion = EstadoAsignacion.Activa
             };
 

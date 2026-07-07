@@ -11,5 +11,6 @@ namespace Models
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
 
         public virtual ICollection<Activos> Activos { get; set; } = new List<Activos>();
+        public virtual ICollection<ItemOC> ItemsOC { get; set; } = new List<ItemOC>();
     }
 }

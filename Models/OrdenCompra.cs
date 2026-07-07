@@ -10,8 +10,8 @@ namespace Models
         public string Proveedor { get; set; } = null!;
         public decimal Total { get; set; }
         public string Observaciones { get; set; } = null!;
-        public DateTime FechaCompra { get; set; } = DateTime.Now;
+        public DateTime FechaCompra { get; set; } = DateTime.UtcNow;
 
-        public virtual ICollection<Activos> Activos { get; set; } = new List<Activos>();
+        public virtual ICollection<ItemOC> ItemsOC { get; set; } = new List<ItemOC>();
     }
 }

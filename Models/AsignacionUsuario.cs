@@ -18,7 +18,7 @@ namespace Models
         [ForeignKey("Parqueadero")]
         public int? IdParqueadero { get; set; }
 
-        public DateTime FechaAsignacion { get; set; } = DateTime.Now;
+        public DateTime FechaAsignacion { get; set; } = DateTime.UtcNow;
         public EstadoAsignacion EstadoAsignacion { get; set; } = EstadoAsignacion.Activa;
 
         public virtual Activos ActivoNav { get; set; } = null!;

@@ -31,6 +31,8 @@ namespace Repositories
             return await _context.Activos
                 .Include(a => a.Categoria)
                 .Include(a => a.OrdenCompra)
+                .Include(a => a.ItemOC)
+                .Include(a => a.DetalleItemOC)
                 .OrderByDescending(a => a.FechaAdquisicion)
                 .ToListAsync();
         }
@@ -40,6 +42,8 @@ namespace Repositories
             return await _context.Activos
                 .Include(a => a.Categoria)
                 .Include(a => a.OrdenCompra)
+                .Include(a => a.ItemOC)
+                .Include(a => a.DetalleItemOC)
                 .FirstOrDefaultAsync(a => a.IdActivo == id);
         }
 

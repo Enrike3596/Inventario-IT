@@ -3,6 +3,7 @@ using System;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HelpDesk.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260707015017_AddItemOCAndDetalleItemOC")]
+    partial class AddItemOCAndDetalleItemOC
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,10 +43,10 @@ namespace HelpDesk.API.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("FechaAdquisicion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("FechaBaja")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("IdCategoria")
                         .HasColumnType("integer");
@@ -108,7 +111,7 @@ namespace HelpDesk.API.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("FechaAsignacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("IdActivo")
                         .HasColumnType("integer");
@@ -142,7 +145,7 @@ namespace HelpDesk.API.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCanal"));
 
                     b.Property<DateTime>("FechaSolicitud")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -250,7 +253,7 @@ namespace HelpDesk.API.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdHistorial"));
 
                     b.Property<DateTime>("FechaMovimiento")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("IdActivo")
                         .HasColumnType("integer");
@@ -334,7 +337,7 @@ namespace HelpDesk.API.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdOrden"));
 
                     b.Property<DateTime>("FechaCompra")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("NumeroOC")
                         .IsRequired()
@@ -429,7 +432,7 @@ namespace HelpDesk.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("FechaSalida")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("IdCanal")
                         .HasColumnType("integer");
@@ -528,7 +531,7 @@ namespace HelpDesk.API.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("IdRol")
                         .HasColumnType("integer");

@@ -86,6 +86,10 @@ namespace Services
                 FechaSalida = s.FechaSalida,
                 RegistroSalida = s.RegistroSalida,
                 Observaciones = s.Observaciones,
+                FechaCreacion = s.FechaCreacion,
+                FechaModificacion = s.FechaModificacion,
+                CreadoPor = s.CreadoPor,
+                ModificadoPor = s.ModificadoPor,
                 Detalles = s.DetallesSalida.Select(d => new DetalleSalidaResponseDTO
                 {
                     IdDetalleSalida = d.IdDetalleSalida,
@@ -95,7 +99,11 @@ namespace Services
                     Serial = d.Activo?.Serial,
                     Marca = d.Activo?.Marca,
                     Modelo = d.Activo?.Modelo,
-                    Cantidad = d.Cantidad
+                    Cantidad = d.Cantidad,
+                    FechaCreacion = d.FechaCreacion,
+                    FechaModificacion = d.FechaModificacion,
+                    CreadoPor = d.CreadoPor,
+                    ModificadoPor = d.ModificadoPor
                 }).ToList()
             };
         }

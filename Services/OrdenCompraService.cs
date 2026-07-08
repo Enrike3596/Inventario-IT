@@ -87,7 +87,11 @@ namespace Services
                 EstadoActivo = a.EstadoActivo,
                 FechaAdquisicion = a.FechaAdquisicion,
                 FechaBaja = a.FechaBaja,
-                Observaciones = a.Observaciones
+                Observaciones = a.Observaciones,
+                FechaCreacion = a.FechaCreacion,
+                FechaModificacion = a.FechaModificacion,
+                CreadoPor = a.CreadoPor,
+                ModificadoPor = a.ModificadoPor
             }).ToList();
         }
 
@@ -101,6 +105,10 @@ namespace Services
                 Total = o.Total,
                 Observaciones = o.Observaciones,
                 FechaCompra = o.FechaCompra,
+                FechaCreacion = o.FechaCreacion,
+                FechaModificacion = o.FechaModificacion,
+                CreadoPor = o.CreadoPor,
+                ModificadoPor = o.ModificadoPor,
                 ItemsOC = o.ItemsOC?.Select(i => new ItemOCResponseDTO
                 {
                     IdItemOC = i.IdItemOC,
@@ -114,6 +122,10 @@ namespace Services
                     Observaciones = i.Observaciones,
                     CantidadEsperada = i.CantidadEsperada,
                     CantidadIngresada = i.DetallesItem?.Count(d => d.Procesado) ?? 0,
+                    FechaCreacion = i.FechaCreacion,
+                    FechaModificacion = i.FechaModificacion,
+                    CreadoPor = i.CreadoPor,
+                    ModificadoPor = i.ModificadoPor,
                     DetallesItem = i.DetallesItem?.Select(d => new DetalleItemOCResponseDTO
                     {
                         IdDetalleItemOC = d.IdDetalleItemOC,
@@ -122,7 +134,11 @@ namespace Services
                         Procesado = d.Procesado,
                         IdActivo = d.IdActivo,
                         CodigoActivo = d.Activo?.CodigoActivo,
-                        Observaciones = d.Observaciones
+                        Observaciones = d.Observaciones,
+                        FechaCreacion = d.FechaCreacion,
+                        FechaModificacion = d.FechaModificacion,
+                        CreadoPor = d.CreadoPor,
+                        ModificadoPor = d.ModificadoPor
                     }).ToList() ?? new()
                 }).ToList() ?? new()
             };
@@ -138,6 +154,10 @@ namespace Services
                 Total = o.Total,
                 Observaciones = o.Observaciones,
                 FechaCompra = o.FechaCompra,
+                FechaCreacion = o.FechaCreacion,
+                FechaModificacion = o.FechaModificacion,
+                CreadoPor = o.CreadoPor,
+                ModificadoPor = o.ModificadoPor,
                 ItemsOC = o.ItemsOC?.Select(i => new ItemOCResponseDTO
                 {
                     IdItemOC = i.IdItemOC,
@@ -151,6 +171,10 @@ namespace Services
                     Observaciones = i.Observaciones,
                     CantidadEsperada = i.CantidadEsperada,
                     CantidadIngresada = i.DetallesItem?.Count(d => d.Procesado) ?? 0,
+                    FechaCreacion = i.FechaCreacion,
+                    FechaModificacion = i.FechaModificacion,
+                    CreadoPor = i.CreadoPor,
+                    ModificadoPor = i.ModificadoPor,
                     DetallesItem = i.DetallesItem?.Select(d => new DetalleItemOCResponseDTO
                     {
                         IdDetalleItemOC = d.IdDetalleItemOC,
@@ -159,7 +183,11 @@ namespace Services
                         Procesado = d.Procesado,
                         IdActivo = d.IdActivo,
                         CodigoActivo = d.Activo?.CodigoActivo,
-                        Observaciones = d.Observaciones
+                        Observaciones = d.Observaciones,
+                        FechaCreacion = d.FechaCreacion,
+                        FechaModificacion = d.FechaModificacion,
+                        CreadoPor = d.CreadoPor,
+                        ModificadoPor = d.ModificadoPor
                     }).ToList() ?? new()
                 }).ToList() ?? new()
             };

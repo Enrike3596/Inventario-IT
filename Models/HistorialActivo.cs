@@ -21,6 +21,11 @@ namespace Models
         [ForeignKey("UsuarioEntrega")]
         public int IdUsuarioEntrega { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         public virtual Activos Activo { get; set; } = null!;
         public virtual Salida Salida { get; set; } = null!;
         public virtual Usuarios UsuarioEntrega { get; set; } = null!;

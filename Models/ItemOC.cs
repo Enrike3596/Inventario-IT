@@ -30,6 +30,11 @@ namespace Models
 
         public int CantidadEsperada { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         // Navegación
         public virtual OrdenCompra OrdenCompra { get; set; } = null!;
         public virtual CategoriaActivo Categoria { get; set; } = null!;

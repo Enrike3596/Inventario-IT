@@ -67,7 +67,11 @@ namespace Services
                 NombreSede = p.Sede?.Nombre,
                 Nombre = p.Nombre,
                 Ubicacion = p.Ubicacion,
-                Estado = p.Estado
+                Estado = p.Estado,
+                FechaCreacion = p.FechaCreacion,
+                FechaModificacion = p.FechaModificacion,
+                CreadoPor = p.CreadoPor,
+                ModificadoPor = p.ModificadoPor
             };
         }
     }

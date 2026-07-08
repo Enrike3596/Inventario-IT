@@ -212,7 +212,10 @@ namespace Services
                 Telefono = u.Telefono,
                 Cargo = u.Cargo,
                 EstadoUsuario = u.EstadoUsuario,
-                FechaCreacion = u.FechaCreacion
+                FechaCreacion = u.FechaCreacion,
+                FechaModificacion = u.FechaModificacion,
+                CreadoPor = u.CreadoPor,
+                ModificadoPor = u.ModificadoPor
             };
         }
     }

@@ -63,5 +63,9 @@ namespace DTOs
         public int CantidadEsperada { get; set; }
         public int CantidadIngresada { get; set; }
         public List<DetalleItemOCResponseDTO> DetallesItem { get; set; } = new();
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

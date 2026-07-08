@@ -29,6 +29,11 @@ namespace Models
         public string RegistroSalida { get; set; } = null!;
         public string? Observaciones { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         public virtual Usuarios? UsuarioDestino { get; set; }
         public virtual Parqueadero? ParqueaderoDestino { get; set; }
         public virtual Usuarios UsuarioEntrega { get; set; } = null!;

@@ -88,6 +88,7 @@ builder.Services.AddScoped<ISalidaService, SalidaService>();
 builder.Services.AddScoped<ISedeService, SedeService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddOpenApi();
 
 var jwtKey = builder.Configuration["Jwt:Key"]!;

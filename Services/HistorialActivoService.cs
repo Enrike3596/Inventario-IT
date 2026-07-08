@@ -43,7 +43,11 @@ namespace Services
                 TipoMovimiento = h.TipoMovimiento,
                 FechaMovimiento = h.FechaMovimiento,
                 IdUsuarioEntrega = h.IdUsuarioEntrega,
-                NombreUsuarioEntrega = h.UsuarioEntrega?.Nombre
+                NombreUsuarioEntrega = h.UsuarioEntrega?.Nombre,
+                FechaCreacion = h.FechaCreacion,
+                FechaModificacion = h.FechaModificacion,
+                CreadoPor = h.CreadoPor,
+                ModificadoPor = h.ModificadoPor
             };
         }
     }

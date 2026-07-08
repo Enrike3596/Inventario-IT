@@ -30,5 +30,9 @@ namespace DTOs
         public DateTime FechaMovimiento { get; set; }
         public int IdUsuarioEntrega { get; set; }
         public string? NombreUsuarioEntrega { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

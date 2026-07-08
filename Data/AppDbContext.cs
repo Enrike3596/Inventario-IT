@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data
@@ -8,7 +10,12 @@ namespace Data
 
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Sedes> Sedes { get; set; }
@@ -288,6 +295,76 @@ namespace Data
                 .WithMany(s => s.Usuarios)
                 .HasForeignKey(u => u.IdSede)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones de auditoría - CreadoPor / ModificadoPor
+            ConfigureAuditRelationships<Activos>(modelBuilder);
+            ConfigureAuditRelationships<AsignacionUsuario>(modelBuilder);
+            ConfigureAuditRelationships<Canal>(modelBuilder);
+            ConfigureAuditRelationships<CategoriaActivo>(modelBuilder);
+            ConfigureAuditRelationships<DetalleItemOC>(modelBuilder);
+            ConfigureAuditRelationships<DetalleSalida>(modelBuilder);
+            ConfigureAuditRelationships<HistorialActivo>(modelBuilder);
+            ConfigureAuditRelationships<ItemOC>(modelBuilder);
+            ConfigureAuditRelationships<OrdenCompra>(modelBuilder);
+            ConfigureAuditRelationships<Parqueadero>(modelBuilder);
+            ConfigureAuditRelationships<Roles>(modelBuilder);
+            ConfigureAuditRelationships<Salida>(modelBuilder);
+            ConfigureAuditRelationships<Sedes>(modelBuilder);
+            ConfigureAuditRelationships<Usuarios>(modelBuilder);
+        }
+
+        private static void ConfigureAuditRelationships<T>(ModelBuilder modelBuilder) where T : class
+        {
+            var entity = modelBuilder.Entity<T>();
+
+            entity.HasOne<Usuarios>()
+                .WithMany()
+                .HasForeignKey("CreadoPor")
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne<Usuarios>()
+                .WithMany()
+                .HasForeignKey("ModificadoPor")
+                .OnDelete(DeleteBehavior.SetNull);
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var userId = GetCurrentUserId();
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Property("FechaCreacion").CurrentValue = DateTime.UtcNow;
+                    if (userId.HasValue)
+                        entry.Property("CreadoPor").CurrentValue = userId.Value;
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property("FechaModificacion").CurrentValue = DateTime.UtcNow;
+                    entry.Property("FechaCreacion").IsModified = false;
+                    if (userId.HasValue)
+                        entry.Property("ModificadoPor").CurrentValue = userId.Value;
+                    else
+                        entry.Property("ModificadoPor").IsModified = false;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(idClaim, out var id))
+                    return id;
+            }
+            return null;
         }
     }
 }

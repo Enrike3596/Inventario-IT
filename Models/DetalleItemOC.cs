@@ -21,6 +21,11 @@ namespace Models
 
         public string? Observaciones { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         // Navegación
         public virtual ItemOC ItemOC { get; set; } = null!;
         public virtual Activos? Activo { get; set; }

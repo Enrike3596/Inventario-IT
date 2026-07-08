@@ -39,6 +39,10 @@ namespace DTOs
         public string? Observaciones { get; set; }
         public DateTime FechaCompra { get; set; }
         public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 
     public class OrdenCompraDetailDTO
@@ -50,5 +54,9 @@ namespace DTOs
         public string Observaciones { get; set; } = null!;
         public DateTime FechaCompra { get; set; }
         public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

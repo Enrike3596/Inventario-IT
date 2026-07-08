@@ -21,6 +21,11 @@ namespace Models
         public DateTime FechaAsignacion { get; set; } = DateTime.UtcNow;
         public EstadoAsignacion EstadoAsignacion { get; set; } = EstadoAsignacion.Activa;
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         public virtual Activos ActivoNav { get; set; } = null!;
         public virtual Usuarios Usuario { get; set; } = null!;
         public virtual Parqueadero? Parqueadero { get; set; }

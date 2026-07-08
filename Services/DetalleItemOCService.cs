@@ -75,7 +75,11 @@ namespace Services
                 Procesado = d.Procesado,
                 IdActivo = d.IdActivo,
                 CodigoActivo = d.Activo?.CodigoActivo,
-                Observaciones = d.Observaciones
+                Observaciones = d.Observaciones,
+                FechaCreacion = d.FechaCreacion,
+                FechaModificacion = d.FechaModificacion,
+                CreadoPor = d.CreadoPor,
+                ModificadoPor = d.ModificadoPor
             };
         }
     }

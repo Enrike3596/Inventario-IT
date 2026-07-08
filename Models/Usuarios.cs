@@ -21,6 +21,9 @@ namespace Models
         public string Contraseña { get; set; } = null!;
         public EstadoUsuario EstadoUsuario { get; set; } = EstadoUsuario.Activo;
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
 
         public virtual Roles Rol { get; set; } = null!;
         public virtual Sedes Sede { get; set; } = null!;

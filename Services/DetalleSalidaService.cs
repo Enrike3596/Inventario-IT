@@ -30,7 +30,11 @@ namespace Services
                 Serial = d.Activo?.Serial,
                 Marca = d.Activo?.Marca,
                 Modelo = d.Activo?.Modelo,
-                Cantidad = d.Cantidad
+                Cantidad = d.Cantidad,
+                FechaCreacion = d.FechaCreacion,
+                FechaModificacion = d.FechaModificacion,
+                CreadoPor = d.CreadoPor,
+                ModificadoPor = d.ModificadoPor
             }).ToList();
         }
 
@@ -48,7 +52,11 @@ namespace Services
                 Serial = detalle.Activo?.Serial,
                 Marca = detalle.Activo?.Marca,
                 Modelo = detalle.Activo?.Modelo,
-                Cantidad = detalle.Cantidad
+                Cantidad = detalle.Cantidad,
+                FechaCreacion = detalle.FechaCreacion,
+                FechaModificacion = detalle.FechaModificacion,
+                CreadoPor = detalle.CreadoPor,
+                ModificadoPor = detalle.ModificadoPor
             };
         }
     }

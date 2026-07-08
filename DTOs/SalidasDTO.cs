@@ -60,5 +60,9 @@ namespace DTOs
         public string RegistroSalida { get; set; } = null!;
         public string? Observaciones { get; set; }
         public List<DetalleSalidaResponseDTO> Detalles { get; set; } = new();
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

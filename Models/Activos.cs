@@ -31,6 +31,11 @@ namespace Models
         public DateTime? FechaBaja { get; set; }
         public string? Observaciones { get; set; }
 
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
+
         public virtual CategoriaActivo Categoria { get; set; } = null!;
         public virtual OrdenCompra OrdenCompra { get; set; } = null!;
         public virtual ItemOC? ItemOC { get; set; }

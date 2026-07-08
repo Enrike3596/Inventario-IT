@@ -64,7 +64,11 @@ namespace Services
                 IdRol = r.IdRol,
                 Nombre = r.Nombre,
                 Tipo = r.Tipo,
-                Estado = r.Estado
+                Estado = r.Estado,
+                FechaCreacion = r.FechaCreacion,
+                FechaModificacion = r.FechaModificacion,
+                CreadoPor = r.CreadoPor,
+                ModificadoPor = r.ModificadoPor
             };
         }
     }

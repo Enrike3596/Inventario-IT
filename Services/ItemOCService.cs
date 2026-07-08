@@ -79,6 +79,10 @@ namespace Services
                 Observaciones = i.Observaciones,
                 CantidadEsperada = i.CantidadEsperada,
                 CantidadIngresada = ingresados,
+                FechaCreacion = i.FechaCreacion,
+                FechaModificacion = i.FechaModificacion,
+                CreadoPor = i.CreadoPor,
+                ModificadoPor = i.ModificadoPor,
                 DetallesItem = i.DetallesItem?.Select(d => new DetalleItemOCResponseDTO
                 {
                     IdDetalleItemOC = d.IdDetalleItemOC,
@@ -87,7 +91,11 @@ namespace Services
                     Procesado = d.Procesado,
                     IdActivo = d.IdActivo,
                     CodigoActivo = d.Activo?.CodigoActivo,
-                    Observaciones = d.Observaciones
+                    Observaciones = d.Observaciones,
+                    FechaCreacion = d.FechaCreacion,
+                    FechaModificacion = d.FechaModificacion,
+                    CreadoPor = d.CreadoPor,
+                    ModificadoPor = d.ModificadoPor
                 }).ToList() ?? new()
             };
         }

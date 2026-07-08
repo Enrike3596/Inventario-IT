@@ -94,7 +94,11 @@ namespace Services
                 EstadoActivo = a.EstadoActivo,
                 FechaAdquisicion = a.FechaAdquisicion,
                 FechaBaja = a.FechaBaja,
-                Observaciones = a.Observaciones
+                Observaciones = a.Observaciones,
+                FechaCreacion = a.FechaCreacion,
+                FechaModificacion = a.FechaModificacion,
+                CreadoPor = a.CreadoPor,
+                ModificadoPor = a.ModificadoPor
             };
         }
     }

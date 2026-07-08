@@ -14,6 +14,10 @@ namespace Models
         public string Nombre { get; set; } = null!;
         public string Ubicacion { get; set; } = null!;
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
 
         public virtual Sedes Sede { get; set; } = null!;
         public virtual ICollection<Salida> Salidas { get; set; } = new List<Salida>();

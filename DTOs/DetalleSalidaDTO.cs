@@ -22,5 +22,9 @@ namespace DTOs
         public string? Marca { get; set; }
         public string? Modelo { get; set; }
         public int Cantidad { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

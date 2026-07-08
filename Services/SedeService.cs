@@ -66,7 +66,11 @@ namespace Services
                 Nombre = s.Nombre,
                 Direccion = s.Direccion,
                 Ciudad = s.Ciudad,
-                Estado = s.Estado
+                Estado = s.Estado,
+                FechaCreacion = s.FechaCreacion,
+                FechaModificacion = s.FechaModificacion,
+                CreadoPor = s.CreadoPor,
+                ModificadoPor = s.ModificadoPor
             };
         }
     }

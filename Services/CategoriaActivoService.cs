@@ -62,7 +62,11 @@ namespace Services
             {
                 IdCategoria = c.IdCategoria,
                 Nombre = c.Nombre,
-                Estado = c.Estado
+                Estado = c.Estado,
+                FechaCreacion = c.FechaCreacion,
+                FechaModificacion = c.FechaModificacion,
+                CreadoPor = c.CreadoPor,
+                ModificadoPor = c.ModificadoPor
             };
         }
     }

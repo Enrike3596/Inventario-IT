@@ -81,7 +81,11 @@ namespace Services
                 IdParqueadero = a.IdParqueadero,
                 NombreParqueadero = a.Parqueadero?.Nombre,
                 FechaAsignacion = a.FechaAsignacion,
-                EstadoAsignacion = a.EstadoAsignacion
+                EstadoAsignacion = a.EstadoAsignacion,
+                FechaCreacion = a.FechaCreacion,
+                FechaModificacion = a.FechaModificacion,
+                CreadoPor = a.CreadoPor,
+                ModificadoPor = a.ModificadoPor
             };
         }
     }

@@ -77,5 +77,9 @@ namespace DTOs
         public DateTime FechaAdquisicion { get; set; }
         public DateTime? FechaBaja { get; set; }
         public string? Observaciones { get; set; }
+        public DateTime FechaCreacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
+        public int? CreadoPor { get; set; }
+        public int? ModificadoPor { get; set; }
     }
 }

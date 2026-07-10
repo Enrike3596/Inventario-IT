@@ -104,6 +104,8 @@ namespace Repositories
             orden.Total = dto.Total;
             orden.Observaciones = (dto.Observaciones ?? string.Empty).Trim();
 
+            orden.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return orden;
         }

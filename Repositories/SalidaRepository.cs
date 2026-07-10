@@ -120,6 +120,8 @@ namespace Repositories
             salida.NumeroTicket = dto.NumeroTicket ?? salida.NumeroTicket;
             salida.Observaciones = dto.Observaciones ?? salida.Observaciones;
 
+            salida.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return salida;
         }

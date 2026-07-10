@@ -125,6 +125,8 @@ namespace Repositories
 
             usuario.EstadoUsuario = dto.EstadoUsuario;
 
+            usuario.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
             await _context.Entry(usuario).Reference(u => u.Sede).LoadAsync();

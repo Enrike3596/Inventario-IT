@@ -9,6 +9,7 @@ namespace Services
     {
         Task<List<AsignacionUsuarioResponseDTO>> ObtenerTodosAsync();
         Task<AsignacionUsuarioResponseDTO?> ObtenerPorIdAsync(int id);
+        Task<List<AsignacionUsuarioResponseDTO>> ObtenerPorActivoAsync(int idActivo);
         Task<AsignacionUsuarioResponseDTO> CrearAsync(AsignacionUsuarioCreateDTO dto);
         Task<AsignacionUsuarioResponseDTO?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
         Task<AsignacionUsuarioResponseDTO?> DesactivarAsync(int id);
@@ -34,6 +35,12 @@ namespace Services
         {
             var asignacion = await _repo.ObtenerPorIdAsync(id);
             return asignacion == null ? null : MapToDTO(asignacion);
+        }
+
+        public async Task<List<AsignacionUsuarioResponseDTO>> ObtenerPorActivoAsync(int idActivo)
+        {
+            var asignaciones = await _repo.ObtenerPorActivoAsync(idActivo);
+            return asignaciones.Select(MapToDTO).ToList();
         }
 
         public async Task<AsignacionUsuarioResponseDTO> CrearAsync(AsignacionUsuarioCreateDTO dto)

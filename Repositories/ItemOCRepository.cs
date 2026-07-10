@@ -86,6 +86,8 @@ namespace Repositories
             item.Observaciones = (dto.Observaciones ?? string.Empty).Trim();
             item.CantidadEsperada = dto.CantidadEsperada;
 
+            item.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return item;
         }

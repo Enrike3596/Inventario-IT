@@ -78,6 +78,8 @@ namespace Repositories
 
             categoria.Estado = dto.Estado;
 
+            categoria.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return categoria;
         }

@@ -96,6 +96,8 @@ namespace Repositories
 
             sede.Estado = dto.Estado;
 
+            sede.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return sede;
         }

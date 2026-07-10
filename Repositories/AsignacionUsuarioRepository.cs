@@ -11,6 +11,7 @@ namespace Repositories
     {
         Task<List<AsignacionUsuario>> ObtenerTodosAsync();
         Task<AsignacionUsuario?> ObtenerPorIdAsync(int id);
+        Task<List<AsignacionUsuario>> ObtenerPorActivoAsync(int idActivo);
         Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion);
         Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
         Task<AsignacionUsuario?> DesactivarAsync(int id);
@@ -43,6 +44,17 @@ namespace Repositories
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
                 .FirstOrDefaultAsync(a => a.IdAsignacion == id);
+        }
+
+        public async Task<List<AsignacionUsuario>> ObtenerPorActivoAsync(int idActivo)
+        {
+            return await _context.AsignacionesUsuario
+                .Include(a => a.ActivoNav)
+                .Include(a => a.Usuario)
+                .Include(a => a.Parqueadero)
+                .Where(a => a.IdActivo == idActivo)
+                .OrderByDescending(a => a.FechaAsignacion)
+                .ToListAsync();
         }
 
         public async Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion)
@@ -85,6 +97,9 @@ namespace Repositories
             if (asignacion == null) return null;
 
             asignacion.EstadoAsignacion = dto.EstadoAsignacion;
+
+            asignacion.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return asignacion;
         }

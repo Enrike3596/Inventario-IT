@@ -15,6 +15,8 @@ namespace DTOs
         public string Nombre { get; set; } = null!;
 
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class CategoriaActivoResponseDTO

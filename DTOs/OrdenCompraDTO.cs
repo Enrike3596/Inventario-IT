@@ -28,6 +28,8 @@ namespace DTOs
         public decimal Total { get; set; }
 
         public string? Observaciones { get; set; }
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class OrdenCompraResponseDTO

@@ -47,6 +47,8 @@ namespace DTOs
 
         [Range(1, int.MaxValue, ErrorMessage = "La cantidad esperada debe ser mayor a 0")]
         public int CantidadEsperada { get; set; } = 1;
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class ItemOCResponseDTO

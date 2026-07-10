@@ -49,6 +49,8 @@ namespace DTOs
         public string Cargo { get; set; } = null!;
 
         public EstadoUsuario EstadoUsuario { get; set; } = EstadoUsuario.Activo;
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class UsuarioResponseDTO

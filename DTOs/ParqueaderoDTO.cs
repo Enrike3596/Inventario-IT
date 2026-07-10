@@ -27,6 +27,8 @@ namespace DTOs
         public string Ubicacion { get; set; } = null!;
 
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class ParqueaderoResponseDTO

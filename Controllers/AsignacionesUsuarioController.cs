@@ -30,6 +30,20 @@ namespace Controllers
             }
         }
 
+        [HttpGet("activo/{idActivo}")]
+        public async Task<IActionResult> ObtenerPorActivo(int idActivo)
+        {
+            try
+            {
+                var data = await _service.ObtenerPorActivoAsync(idActivo);
+                return Ok(ResponseHelper.Success(data));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseHelper.Error(ex.Message));
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {

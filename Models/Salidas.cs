@@ -29,6 +29,7 @@ namespace Models
         public string RegistroSalida { get; set; } = null!;
         public string? Observaciones { get; set; }
 
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

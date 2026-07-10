@@ -128,6 +128,8 @@ namespace Repositories
             activo.FechaBaja = dto.FechaBaja;
             activo.Observaciones = dto.Observaciones;
 
+            activo.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
             await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();

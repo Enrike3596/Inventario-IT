@@ -87,6 +87,8 @@ namespace Repositories
 
             rol.Estado = dto.Estado;
 
+            rol.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return rol;
         }

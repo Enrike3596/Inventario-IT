@@ -11,6 +11,7 @@ namespace Models
         public decimal Total { get; set; }
         public string Observaciones { get; set; } = null!;
         public DateTime FechaCompra { get; set; } = DateTime.UtcNow;
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

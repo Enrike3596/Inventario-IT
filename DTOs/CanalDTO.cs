@@ -12,6 +12,8 @@ namespace DTOs
     {
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public string Nombre { get; set; } = null!;
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class CanalResponseDTO

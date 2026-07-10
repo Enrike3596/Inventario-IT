@@ -21,6 +21,7 @@ namespace Models
         public DateTime FechaAsignacion { get; set; } = DateTime.UtcNow;
         public EstadoAsignacion EstadoAsignacion { get; set; } = EstadoAsignacion.Activa;
 
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

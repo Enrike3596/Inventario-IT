@@ -14,6 +14,7 @@ namespace Models
         public string Nombre { get; set; } = null!;
         public string Ubicacion { get; set; } = null!;
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

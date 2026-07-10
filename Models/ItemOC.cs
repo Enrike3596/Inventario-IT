@@ -30,6 +30,7 @@ namespace Models
 
         public int CantidadEsperada { get; set; }
 
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

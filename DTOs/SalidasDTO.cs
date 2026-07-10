@@ -41,6 +41,8 @@ namespace DTOs
         public string? NumeroTicket { get; set; }
 
         public string? Observaciones { get; set; }
+
+        public string? MotivoEdicion { get; set; }
     }
 
     public class SalidaResponseDTO

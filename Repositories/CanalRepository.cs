@@ -73,6 +73,8 @@ namespace Repositories
                 throw new ArgumentException("Nombre no puede ser vacío.", nameof(dto.Nombre));
             canal.Nombre = nombre;
 
+            canal.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             return canal;
         }

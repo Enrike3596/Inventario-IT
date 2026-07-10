@@ -95,6 +95,8 @@ namespace Repositories
 
             parqueadero.Estado = dto.Estado;
 
+            parqueadero.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
             await _context.SaveChangesAsync();
             await _context.Entry(parqueadero).Reference(p => p.Sede).LoadAsync();
             return parqueadero;

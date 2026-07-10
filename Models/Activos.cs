@@ -31,6 +31,7 @@ namespace Models
         public DateTime? FechaBaja { get; set; }
         public string? Observaciones { get; set; }
 
+        public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

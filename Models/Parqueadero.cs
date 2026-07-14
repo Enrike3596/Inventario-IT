@@ -21,7 +21,6 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual Sedes Sede { get; set; } = null!;
-        public virtual ICollection<Salida> Salidas { get; set; } = new List<Salida>();
         public virtual ICollection<AsignacionUsuario> AsignacionesUsuario { get; set; } = new List<AsignacionUsuario>();
     }
 }

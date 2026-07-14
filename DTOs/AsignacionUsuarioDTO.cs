@@ -12,6 +12,17 @@ namespace DTOs
         public int IdUsuarioDestino { get; set; }
 
         public int? IdParqueadero { get; set; }
+
+        [Required(ErrorMessage = "El canal es obligatorio")]
+        public int IdCanal { get; set; }
+
+        [Required(ErrorMessage = "El usuario que entrega es obligatorio")]
+        public int IdUsuarioEntrega { get; set; }
+
+        [Required(ErrorMessage = "El registro de salida es obligatorio")]
+        public string RegistroSalida { get; set; } = null!;
+
+        public string? NumeroTicket { get; set; }
     }
 
     public class AsignacionUsuarioUpdateDTO
@@ -31,6 +42,12 @@ namespace DTOs
         public string? NombreUsuarioDestino { get; set; }
         public int? IdParqueadero { get; set; }
         public string? NombreParqueadero { get; set; }
+        public int IdCanal { get; set; }
+        public string? NombreCanal { get; set; }
+        public int IdUsuarioEntrega { get; set; }
+        public string? NombreUsuarioEntrega { get; set; }
+        public string RegistroSalida { get; set; } = null!;
+        public string? NumeroTicket { get; set; }
         public DateTime FechaAsignacion { get; set; }
         public EstadoAsignacion EstadoAsignacion { get; set; }
         public DateTime FechaCreacion { get; set; }

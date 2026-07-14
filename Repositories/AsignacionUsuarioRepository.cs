@@ -33,6 +33,8 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
+                .Include(a => a.CanalSolicitud)
+                .Include(a => a.UsuarioEntrega)
                 .Where(a => a.EstadoAsignacion == EstadoAsignacion.Activa)
                 .ToListAsync();
         }
@@ -43,6 +45,8 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
+                .Include(a => a.CanalSolicitud)
+                .Include(a => a.UsuarioEntrega)
                 .FirstOrDefaultAsync(a => a.IdAsignacion == id);
         }
 
@@ -52,6 +56,8 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
+                .Include(a => a.CanalSolicitud)
+                .Include(a => a.UsuarioEntrega)
                 .Where(a => a.IdActivo == idActivo)
                 .OrderByDescending(a => a.FechaAsignacion)
                 .ToListAsync();
@@ -71,6 +77,8 @@ namespace Repositories
                 await _context.SaveChangesAsync();
                 await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
                 await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
+                await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
+                await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
                 return asignacion;
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
@@ -81,6 +89,8 @@ namespace Repositories
                 await _context.SaveChangesAsync();
                 await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
                 await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
+                await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
+                await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
                 return asignacion;
             }
         }
@@ -97,7 +107,6 @@ namespace Repositories
             if (asignacion == null) return null;
 
             asignacion.EstadoAsignacion = dto.EstadoAsignacion;
-
             asignacion.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
 
             await _context.SaveChangesAsync();

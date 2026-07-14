@@ -50,6 +50,10 @@ namespace Services
                 IdActivo = dto.IdActivo,
                 IdUsuarioDestino = dto.IdUsuarioDestino,
                 IdParqueadero = dto.IdParqueadero,
+                IdCanal = dto.IdCanal,
+                IdUsuarioEntrega = dto.IdUsuarioEntrega,
+                RegistroSalida = dto.RegistroSalida,
+                NumeroTicket = dto.NumeroTicket,
                 FechaAsignacion = DateTime.UtcNow,
                 EstadoAsignacion = EstadoAsignacion.Activa
             };
@@ -87,6 +91,12 @@ namespace Services
                 NombreUsuarioDestino = a.Usuario?.Nombre,
                 IdParqueadero = a.IdParqueadero,
                 NombreParqueadero = a.Parqueadero?.Nombre,
+                IdCanal = a.IdCanal,
+                NombreCanal = a.CanalSolicitud?.Nombre,
+                IdUsuarioEntrega = a.IdUsuarioEntrega,
+                NombreUsuarioEntrega = a.UsuarioEntrega?.Nombre,
+                RegistroSalida = a.RegistroSalida,
+                NumeroTicket = a.NumeroTicket,
                 FechaAsignacion = a.FechaAsignacion,
                 EstadoAsignacion = a.EstadoAsignacion,
                 FechaCreacion = a.FechaCreacion,

@@ -82,13 +82,6 @@ namespace Data
                 entity.Property(e => e.Estado).HasConversion(estadoGenericoConverter).HasMaxLength(20);
             });
 
-            // Configuración Salida - Destino obligatorio (al menos uno)
-            modelBuilder.Entity<Salida>(entity =>
-            {
-                entity.ToTable(t => t.HasCheckConstraint("CK_Salida_Destino",
-                    "\"IdUsuarioDestino\" IS NOT NULL OR \"IdParqueaderoDestino\" IS NOT NULL"));
-            });
-
             // Configuración Activos - Código único
             modelBuilder.Entity<Activos>(entity =>
             {
@@ -142,27 +135,6 @@ namespace Data
                 .HasForeignKey(s => s.IdUsuarioDestino)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones Salida -> Parqueadero destino (opcional)
-            modelBuilder.Entity<Salida>()
-                .HasOne(s => s.ParqueaderoDestino)
-                .WithMany(p => p.Salidas)
-                .HasForeignKey(s => s.IdParqueaderoDestino)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Relaciones Salida -> Usuario entrega
-            modelBuilder.Entity<Salida>()
-                .HasOne(s => s.UsuarioEntrega)
-                .WithMany(u => u.SalidasEntrega)
-                .HasForeignKey(s => s.IdUsuarioEntrega)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Relaciones Salida -> Canal
-            modelBuilder.Entity<Salida>()
-                .HasOne(s => s.CanalSolicitud)
-                .WithMany(c => c.Salidas)
-                .HasForeignKey(s => s.IdCanal)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Relaciones DetalleSalida -> Salida
             modelBuilder.Entity<DetalleSalida>()
                 .HasOne(d => d.Salida)
@@ -198,7 +170,7 @@ namespace Data
                 .HasForeignKey(au => au.IdActivo)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones AsignacionUsuario -> Usuario
+            // Relaciones AsignacionUsuario -> Usuario destino
             modelBuilder.Entity<AsignacionUsuario>()
                 .HasOne(au => au.Usuario)
                 .WithMany(u => u.Asignaciones)
@@ -211,6 +183,20 @@ namespace Data
                 .WithMany(p => p.AsignacionesUsuario)
                 .HasForeignKey(au => au.IdParqueadero)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Relaciones AsignacionUsuario -> Canal
+            modelBuilder.Entity<AsignacionUsuario>()
+                .HasOne(au => au.CanalSolicitud)
+                .WithMany(c => c.Asignaciones)
+                .HasForeignKey(au => au.IdCanal)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relaciones AsignacionUsuario -> Usuario entrega
+            modelBuilder.Entity<AsignacionUsuario>()
+                .HasOne(au => au.UsuarioEntrega)
+                .WithMany(u => u.AsignacionesEntrega)
+                .HasForeignKey(au => au.IdUsuarioEntrega)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones HistorialActivo -> Activo
             modelBuilder.Entity<HistorialActivo>()

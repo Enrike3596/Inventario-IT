@@ -38,12 +38,7 @@ namespace Services
         {
             var salida = new Salida
             {
-                IdCanal = dto.IdCanal,
-                NumeroTicket = dto.NumeroTicket,
                 IdUsuarioDestino = dto.IdUsuarioDestino,
-                IdParqueaderoDestino = dto.IdParqueaderoDestino,
-                IdUsuarioEntrega = dto.IdUsuarioEntrega,
-                RegistroSalida = dto.RegistroSalida,
                 Observaciones = dto.Observaciones
             };
 
@@ -73,18 +68,10 @@ namespace Services
             return new SalidaResponseDTO
             {
                 IdSalida = s.IdSalida,
-                IdCanal = s.IdCanal,
-                NombreCanal = s.CanalSolicitud?.Nombre,
                 CodigoUnico = s.CodigoUnico,
-                NumeroTicket = s.NumeroTicket,
                 IdUsuarioDestino = s.IdUsuarioDestino,
                 NombreUsuarioDestino = s.UsuarioDestino?.Nombre,
-                IdParqueaderoDestino = s.IdParqueaderoDestino,
-                NombreParqueaderoDestino = s.ParqueaderoDestino?.Nombre,
-                IdUsuarioEntrega = s.IdUsuarioEntrega,
-                NombreUsuarioEntrega = s.UsuarioEntrega?.Nombre,
                 FechaSalida = s.FechaSalida,
-                RegistroSalida = s.RegistroSalida,
                 Observaciones = s.Observaciones,
                 FechaCreacion = s.FechaCreacion,
                 FechaModificacion = s.FechaModificacion,

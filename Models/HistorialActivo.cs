@@ -13,13 +13,13 @@ namespace Models
         public int IdActivo { get; set; }
 
         [ForeignKey("Salida")]
-        public int IdSalida { get; set; }
+        public int? IdSalida { get; set; }
 
         public TipoMovimiento TipoMovimiento { get; set; }
         public DateTime FechaMovimiento { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UsuarioEntrega")]
-        public int IdUsuarioEntrega { get; set; }
+        public int? IdUsuarioEntrega { get; set; }
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
@@ -27,7 +27,7 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual Activos Activo { get; set; } = null!;
-        public virtual Salida Salida { get; set; } = null!;
-        public virtual Usuarios UsuarioEntrega { get; set; } = null!;
+        public virtual Salida? Salida { get; set; }
+        public virtual Usuarios? UsuarioEntrega { get; set; }
     }
 }

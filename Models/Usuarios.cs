@@ -28,8 +28,8 @@ namespace Models
 
         public virtual Roles Rol { get; set; } = null!;
         public virtual Sedes Sede { get; set; } = null!;
-        public virtual ICollection<Salida> SalidasEntrega { get; set; } = new List<Salida>();
         public virtual ICollection<Salida> SalidasDestino { get; set; } = new List<Salida>();
         public virtual ICollection<AsignacionUsuario> Asignaciones { get; set; } = new List<AsignacionUsuario>();
+        public virtual ICollection<AsignacionUsuario> AsignacionesEntrega { get; set; } = new List<AsignacionUsuario>();
     }
 }

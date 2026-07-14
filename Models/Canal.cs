@@ -14,6 +14,6 @@ namespace Models
         public int? CreadoPor { get; set; }
         public int? ModificadoPor { get; set; }
 
-        public virtual ICollection<Salida> Salidas { get; set; } = new List<Salida>();
+        public virtual ICollection<AsignacionUsuario> Asignaciones { get; set; } = new List<AsignacionUsuario>();
     }
 }

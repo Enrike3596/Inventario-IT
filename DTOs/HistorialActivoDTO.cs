@@ -8,14 +8,12 @@ namespace DTOs
         [Required]
         public int IdActivo { get; set; }
 
-        [Required]
-        public int IdSalida { get; set; }
+        public int? IdSalida { get; set; }
 
         [Required(ErrorMessage = "El tipo de movimiento es obligatorio")]
         public TipoMovimiento TipoMovimiento { get; set; }
 
-        [Required]
-        public int IdUsuarioEntrega { get; set; }
+        public int? IdUsuarioEntrega { get; set; }
     }
 
     public class HistorialActivoResponseDTO
@@ -24,11 +22,11 @@ namespace DTOs
         public int IdActivo { get; set; }
         public string? CodigoActivo { get; set; }
         public string? Serial { get; set; }
-        public int IdSalida { get; set; }
+        public int? IdSalida { get; set; }
         public string? CodigoSalida { get; set; }
         public TipoMovimiento TipoMovimiento { get; set; }
         public DateTime FechaMovimiento { get; set; }
-        public int IdUsuarioEntrega { get; set; }
+        public int? IdUsuarioEntrega { get; set; }
         public string? NombreUsuarioEntrega { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }

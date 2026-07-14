@@ -27,10 +27,7 @@ namespace Repositories
         public async Task<List<Salida>> ObtenerTodosAsync()
         {
             return await _context.Salidas
-                .Include(s => s.CanalSolicitud)
                 .Include(s => s.UsuarioDestino)
-                .Include(s => s.ParqueaderoDestino)
-                .Include(s => s.UsuarioEntrega)
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
                 .OrderByDescending(s => s.FechaSalida)
@@ -40,10 +37,7 @@ namespace Repositories
         public async Task<Salida?> ObtenerPorIdAsync(int id)
         {
             return await _context.Salidas
-                .Include(s => s.CanalSolicitud)
                 .Include(s => s.UsuarioDestino)
-                .Include(s => s.ParqueaderoDestino)
-                .Include(s => s.UsuarioEntrega)
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
                 .FirstOrDefaultAsync(s => s.IdSalida == id);
@@ -51,14 +45,8 @@ namespace Repositories
 
         public async Task<Salida> CrearAsync(Salida salida, List<DetalleSalida> detalles)
         {
-            if (salida.IdUsuarioDestino == null && salida.IdParqueaderoDestino == null)
-                throw new ArgumentException("Debe especificar un destino (usuario o parqueadero).");
-
             salida.CodigoUnico = await GenerarCodigoUnicoAsync();
             salida.FechaSalida = DateTime.UtcNow;
-            salida.RegistroSalida = (salida.RegistroSalida ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(salida.RegistroSalida))
-                throw new ArgumentException("Registro de salida no puede ser vacío.", nameof(salida));
 
             _context.Salidas.Add(salida);
             await _context.SaveChangesAsync();
@@ -77,16 +65,13 @@ namespace Repositories
                         IdActivo = detalle.IdActivo,
                         IdSalida = salida.IdSalida,
                         TipoMovimiento = TipoMovimiento.Salida,
-                        FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = salida.IdUsuarioEntrega
+                        FechaMovimiento = DateTime.UtcNow
                     });
                 }
             }
 
             await _context.SaveChangesAsync();
 
-            await _context.Entry(salida).Reference(s => s.CanalSolicitud).LoadAsync();
-            await _context.Entry(salida).Reference(s => s.UsuarioEntrega).LoadAsync();
             await _context.Entry(salida).Collection(s => s.DetallesSalida).LoadAsync();
 
             return salida;
@@ -117,9 +102,7 @@ namespace Repositories
             var salida = await _context.Salidas.FindAsync(id);
             if (salida == null) return null;
 
-            salida.NumeroTicket = dto.NumeroTicket ?? salida.NumeroTicket;
             salida.Observaciones = dto.Observaciones ?? salida.Observaciones;
-
             salida.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
 
             await _context.SaveChangesAsync();

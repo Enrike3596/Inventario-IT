@@ -111,7 +111,7 @@ SELECT setval(pg_get_serial_sequence('"ItemsOC"', 'IdItemOC'), 12);
 
 -- ============================================================
 -- 7. ACTIVOS (IdDetalleItemOC se actualiza en paso 8)
---    EstadoActivo: Disponible, Asignado, EnMantenimiento, DadoDeBaja
+--    EstadoActivo: Disponible, Asignado, EnReparacion, DadoDeBaja, Venta
 -- ============================================================
 INSERT INTO "Activos" ("IdActivo", "IdCategoria", "IdOrden", "IdItemOC", "IdDetalleItemOC", "CodigoActivo", "Serial", "Marca", "Modelo", "Referencia", "EstadoActivo", "FechaAdquisicion", "FechaBaja", "Observaciones", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
 -- Laptops Dell (OC-001 / ItemOC 1)
@@ -120,7 +120,7 @@ INSERT INTO "Activos" ("IdActivo", "IdCategoria", "IdOrden", "IdItemOC", "IdDeta
 (3,  1, 1, 1, NULL, 'ACT-003', 'DL-LAT-5420-003', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Pedro Hernández',          '2025-01-15', NULL, NULL, NULL),
 (4,  1, 1, 1, NULL, 'ACT-004', 'DL-LAT-5420-004', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Asignado',      '2025-01-15', NULL, 'Asignado a Laura Díaz',               '2025-01-15', NULL, NULL, NULL),
 (5,  1, 1, 1, NULL, 'ACT-005', 'DL-LAT-5420-005', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL,     '2025-01-15', NULL, NULL, NULL),
-(6,  1, 1, 1, NULL, 'ACT-006', 'DL-LAT-5420-006', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'EnMantenimiento','2025-01-15', NULL, 'Pantalla dañada - en reparación',     '2025-01-15', NULL, NULL, NULL),
+(6,  1, 1, 1, NULL, 'ACT-006', 'DL-LAT-5420-006', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'EnReparacion',  '2025-01-15', NULL, 'Pantalla dañada - en reparación',     '2025-01-15', NULL, NULL, NULL),
 (7,  1, 1, 1, NULL, 'ACT-007', 'DL-LAT-5420-007', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL,     '2025-01-15', NULL, NULL, NULL),
 (8,  1, 1, 1, NULL, 'ACT-008', 'DL-LAT-5420-008', 'Dell',    'Latitude 5420',       'i5-1135G7/16GB/512GB',   'Disponible',    '2025-01-15', NULL, NULL,     '2025-01-15', NULL, NULL, NULL),
 -- Monitores HP (OC-002 / ItemOC 2)
@@ -265,12 +265,12 @@ SELECT setval(pg_get_serial_sequence('"Canales"', 'IdCanal'), 5);
 -- 11. SALIDAS
 -- ============================================================
 INSERT INTO "Salidas" ("IdSalida", "CodigoUnico", "EstadoActivo", "FechaSalida", "Observaciones", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
-(1, 'SAL-20250120-000001', 'EnMantenimiento', '2025-01-20 09:00:00', 'Laptop con pantalla dañada - en reparación',  '2025-01-20 09:00:00', NULL, NULL, NULL),
-(2, 'SAL-20250120-000002', 'Vendido',         '2025-01-20 09:30:00', 'Venta de equipo excedente',                   '2025-01-20 09:30:00', NULL, NULL, NULL),
-(3, 'SAL-20250201-000003', 'DadoDeBaja',      '2025-02-01 10:00:00', 'Laptop obsoleta - dada de baja',              '2025-02-01 10:00:00', NULL, NULL, NULL),
-(4, 'SAL-20250220-000004', 'Vendido',         '2025-02-20 11:00:00', 'Venta de tablet en desuso',                   '2025-02-20 11:00:00', NULL, NULL, NULL),
-(5, 'SAL-20250310-000005', 'EnMantenimiento', '2025-03-10 14:00:00', 'Switch en configuración para red parqueadero','2025-03-10 14:00:00', NULL, NULL, NULL),
-(6, 'SAL-20250401-000006', 'Vendido',         '2025-04-01 08:00:00', 'Monitor vendido a personal externo',          '2025-04-01 08:00:00', NULL, NULL, NULL);
+(1, 'SAL-20250120-000001', 'EnReparacion', '2025-01-20 09:00:00', 'Laptop con pantalla dañada - en reparación',  '2025-01-20 09:00:00', NULL, NULL, NULL),
+(2, 'SAL-20250120-000002', 'Venta',         '2025-01-20 09:30:00', 'Venta de equipo excedente',                   '2025-01-20 09:30:00', NULL, NULL, NULL),
+(3, 'SAL-20250201-000003', 'DadoDeBaja',    '2025-02-01 10:00:00', 'Laptop obsoleta - dada de baja',              '2025-02-01 10:00:00', NULL, NULL, NULL),
+(4, 'SAL-20250220-000004', 'Venta',         '2025-02-20 11:00:00', 'Venta de tablet en desuso',                   '2025-02-20 11:00:00', NULL, NULL, NULL),
+(5, 'SAL-20250310-000005', 'EnReparacion',  '2025-03-10 14:00:00', 'Switch en configuración para red parqueadero','2025-03-10 14:00:00', NULL, NULL, NULL),
+(6, 'SAL-20250401-000006', 'Venta',         '2025-04-01 08:00:00', 'Monitor vendido a personal externo',          '2025-04-01 08:00:00', NULL, NULL, NULL);
 
 SELECT setval(pg_get_serial_sequence('"Salidas"', 'IdSalida'), 6);
 

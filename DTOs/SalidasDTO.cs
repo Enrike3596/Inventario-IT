@@ -8,7 +8,8 @@ namespace DTOs
         [Required(ErrorMessage = "El estado del activo es obligatorio")]
         public EstadoActivo EstadoActivo { get; set; }
 
-        public string? Observaciones { get; set; }
+        [Required(ErrorMessage = "Los comentarios son obligatorios")]
+        public string Observaciones { get; set; } = null!;
 
         [Required(ErrorMessage = "Debe incluir al menos un activo")]
         [MinLength(1, ErrorMessage = "Debe incluir al menos un activo")]

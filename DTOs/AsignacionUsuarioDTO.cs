@@ -30,6 +30,8 @@ namespace DTOs
         public EstadoAsignacion EstadoAsignacion { get; set; } = EstadoAsignacion.Activa;
 
         public string? MotivoEdicion { get; set; }
+
+        public int? IdUsuarioRecibe { get; set; }
     }
 
     public class AsignacionUsuarioResponseDTO

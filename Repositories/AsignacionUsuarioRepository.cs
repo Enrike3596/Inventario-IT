@@ -75,11 +75,6 @@ namespace Repositories
             try
             {
                 await _context.SaveChangesAsync();
-                await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
-                return asignacion;
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
                                                && pg.SqlState == PostgresErrorCodes.UniqueViolation)
@@ -87,12 +82,27 @@ namespace Repositories
                 await FixAsignacionIdSequenceAsync();
                 _context.Entry(asignacion).State = EntityState.Added;
                 await _context.SaveChangesAsync();
-                await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
-                await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
-                return asignacion;
             }
+
+            var activo = await _context.Activos.FindAsync(asignacion.IdActivo);
+            if (activo != null)
+            {
+                activo.EstadoActivo = EstadoActivo.Asignado;
+                _context.HistorialActivos.Add(new HistorialActivo
+                {
+                    IdActivo = asignacion.IdActivo,
+                    TipoMovimiento = TipoMovimiento.Asignacion,
+                    FechaMovimiento = DateTime.UtcNow,
+                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega
+                });
+                await _context.SaveChangesAsync();
+            }
+
+            await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
+            await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
+            await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
+            await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
+            return asignacion;
         }
 
         private async Task FixAsignacionIdSequenceAsync()
@@ -103,23 +113,80 @@ namespace Repositories
 
         public async Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto)
         {
-            var asignacion = await _context.AsignacionesUsuario.FindAsync(id);
+            var asignacion = await _context.AsignacionesUsuario
+                .Include(a => a.ActivoNav)
+                .FirstOrDefaultAsync(a => a.IdAsignacion == id);
             if (asignacion == null) return null;
 
+            var estadoAnterior = asignacion.EstadoAsignacion;
             asignacion.EstadoAsignacion = dto.EstadoAsignacion;
             asignacion.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
 
             await _context.SaveChangesAsync();
+
+            if (estadoAnterior == EstadoAsignacion.Activa && dto.EstadoAsignacion == EstadoAsignacion.Finalizada)
+            {
+                var activo = asignacion.ActivoNav;
+                if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
+                {
+                    activo.EstadoActivo = EstadoActivo.Disponible;
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = asignacion.IdActivo,
+                        TipoMovimiento = TipoMovimiento.Devolucion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else if (estadoAnterior == EstadoAsignacion.Finalizada && dto.EstadoAsignacion == EstadoAsignacion.Activa)
+            {
+                var activo = asignacion.ActivoNav;
+                if (activo != null && activo.EstadoActivo != EstadoActivo.Asignado)
+                {
+                    activo.EstadoActivo = EstadoActivo.Asignado;
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = asignacion.IdActivo,
+                        TipoMovimiento = TipoMovimiento.Asignacion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return asignacion;
         }
 
         public async Task<AsignacionUsuario?> DesactivarAsync(int id)
         {
-            var asignacion = await _context.AsignacionesUsuario.FindAsync(id);
+            var asignacion = await _context.AsignacionesUsuario
+                .Include(a => a.ActivoNav)
+                .FirstOrDefaultAsync(a => a.IdAsignacion == id);
             if (asignacion == null) return null;
+
+            if (asignacion.EstadoAsignacion == EstadoAsignacion.Finalizada)
+                return asignacion;
 
             asignacion.EstadoAsignacion = EstadoAsignacion.Finalizada;
             await _context.SaveChangesAsync();
+
+            var activo = asignacion.ActivoNav;
+            if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
+            {
+                activo.EstadoActivo = EstadoActivo.Disponible;
+                _context.HistorialActivos.Add(new HistorialActivo
+                {
+                    IdActivo = asignacion.IdActivo,
+                    TipoMovimiento = TipoMovimiento.Devolucion,
+                    FechaMovimiento = DateTime.UtcNow,
+                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega
+                });
+                await _context.SaveChangesAsync();
+            }
+
             return asignacion;
         }
 

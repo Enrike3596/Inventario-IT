@@ -27,7 +27,6 @@ namespace Repositories
         public async Task<List<Salida>> ObtenerTodosAsync()
         {
             return await _context.Salidas
-                .Include(s => s.UsuarioDestino)
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
                 .OrderByDescending(s => s.FechaSalida)
@@ -37,7 +36,6 @@ namespace Repositories
         public async Task<Salida?> ObtenerPorIdAsync(int id)
         {
             return await _context.Salidas
-                .Include(s => s.UsuarioDestino)
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
                 .FirstOrDefaultAsync(s => s.IdSalida == id);
@@ -59,7 +57,7 @@ namespace Repositories
                 var activo = await _context.Activos.FindAsync(detalle.IdActivo);
                 if (activo != null)
                 {
-                    activo.EstadoActivo = EstadoActivo.Asignado;
+                    activo.EstadoActivo = salida.EstadoActivo;
                     _context.HistorialActivos.Add(new HistorialActivo
                     {
                         IdActivo = detalle.IdActivo,

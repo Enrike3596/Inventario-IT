@@ -5,6 +5,7 @@ namespace Enums
         Disponible = 0,
         Asignado = 1,
         EnMantenimiento = 2,
-        DadoDeBaja = 3
+        DadoDeBaja = 3,
+        Vendido = 4
     }
 }

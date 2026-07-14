@@ -1,4 +1,5 @@
 using DTOs;
+using Enums;
 using Models;
 using Repositories;
 
@@ -38,7 +39,7 @@ namespace Services
         {
             var salida = new Salida
             {
-                IdUsuarioDestino = dto.IdUsuarioDestino,
+                EstadoActivo = dto.EstadoActivo,
                 Observaciones = dto.Observaciones
             };
 
@@ -69,8 +70,7 @@ namespace Services
             {
                 IdSalida = s.IdSalida,
                 CodigoUnico = s.CodigoUnico,
-                IdUsuarioDestino = s.IdUsuarioDestino,
-                NombreUsuarioDestino = s.UsuarioDestino?.Nombre,
+                EstadoActivo = s.EstadoActivo,
                 FechaSalida = s.FechaSalida,
                 Observaciones = s.Observaciones,
                 FechaCreacion = s.FechaCreacion,

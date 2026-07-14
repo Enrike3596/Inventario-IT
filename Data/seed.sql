@@ -264,13 +264,13 @@ SELECT setval(pg_get_serial_sequence('"Canales"', 'IdCanal'), 5);
 -- ============================================================
 -- 11. SALIDAS
 -- ============================================================
-INSERT INTO "Salidas" ("IdSalida", "CodigoUnico", "IdUsuarioDestino", "FechaSalida", "Observaciones", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
-(1, 'SAL-20250120-000001', 4,  '2025-01-20 09:00:00', 'Asignación inicial sede principal',     '2025-01-20 09:00:00', NULL, NULL, NULL),
-(2, 'SAL-20250120-000002', 5,  '2025-01-20 09:30:00', 'Asignación inicial sede principal',     '2025-01-20 09:30:00', NULL, NULL, NULL),
-(3, 'SAL-20250201-000003', 6,  '2025-02-01 10:00:00', 'Asignación sede norte',                 '2025-02-01 10:00:00', NULL, NULL, NULL),
-(4, 'SAL-20250220-000004', 7,  '2025-02-20 11:00:00', 'Asignación sede Medellín',              '2025-02-20 11:00:00', NULL, NULL, NULL),
-(5, 'SAL-20250310-000005', NULL, '2025-03-10 14:00:00', 'Instalación red en parqueadero',        '2025-03-10 14:00:00', NULL, NULL, NULL),
-(6, 'SAL-20250401-000006', NULL, '2025-04-01 08:00:00', 'Para sala de juntas',                   '2025-04-01 08:00:00', NULL, NULL, NULL);
+INSERT INTO "Salidas" ("IdSalida", "CodigoUnico", "EstadoActivo", "FechaSalida", "Observaciones", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
+(1, 'SAL-20250120-000001', 'EnMantenimiento', '2025-01-20 09:00:00', 'Laptop con pantalla dañada - en reparación',  '2025-01-20 09:00:00', NULL, NULL, NULL),
+(2, 'SAL-20250120-000002', 'Vendido',         '2025-01-20 09:30:00', 'Venta de equipo excedente',                   '2025-01-20 09:30:00', NULL, NULL, NULL),
+(3, 'SAL-20250201-000003', 'DadoDeBaja',      '2025-02-01 10:00:00', 'Laptop obsoleta - dada de baja',              '2025-02-01 10:00:00', NULL, NULL, NULL),
+(4, 'SAL-20250220-000004', 'Vendido',         '2025-02-20 11:00:00', 'Venta de tablet en desuso',                   '2025-02-20 11:00:00', NULL, NULL, NULL),
+(5, 'SAL-20250310-000005', 'EnMantenimiento', '2025-03-10 14:00:00', 'Switch en configuración para red parqueadero','2025-03-10 14:00:00', NULL, NULL, NULL),
+(6, 'SAL-20250401-000006', 'Vendido',         '2025-04-01 08:00:00', 'Monitor vendido a personal externo',          '2025-04-01 08:00:00', NULL, NULL, NULL);
 
 SELECT setval(pg_get_serial_sequence('"Salidas"', 'IdSalida'), 6);
 

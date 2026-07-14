@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using Enums;
 
 namespace DTOs
 {
     public class SalidaCreateDTO
     {
-        public int? IdUsuarioDestino { get; set; }
+        [Required(ErrorMessage = "El estado del activo es obligatorio")]
+        public EstadoActivo EstadoActivo { get; set; }
 
         public string? Observaciones { get; set; }
 
@@ -34,8 +36,7 @@ namespace DTOs
     {
         public int IdSalida { get; set; }
         public string CodigoUnico { get; set; } = null!;
-        public int? IdUsuarioDestino { get; set; }
-        public string? NombreUsuarioDestino { get; set; }
+        public EstadoActivo EstadoActivo { get; set; }
         public DateTime FechaSalida { get; set; }
         public string? Observaciones { get; set; }
         public List<DetalleSalidaResponseDTO> Detalles { get; set; } = new();

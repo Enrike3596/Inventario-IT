@@ -98,10 +98,11 @@ namespace Data
                       .HasFilter("\"EstadoAsignacion\" = 'Activa'");
             });
 
-            // Configuración Salida - Índice único para CódigoUnico
+            // Configuración Salida - Índice único para CódigoUnico + conversión EstadoActivo
             modelBuilder.Entity<Salida>(entity =>
             {
                 entity.HasIndex(s => s.CodigoUnico).IsUnique();
+                entity.Property(e => e.EstadoActivo).HasConversion(estadoActivoConverter).HasMaxLength(20);
             });
 
             // Configuración CategoriaActivo - Nombre único
@@ -127,13 +128,6 @@ namespace Data
             {
                 entity.HasIndex(o => o.NumeroOC).IsUnique();
             });
-
-            // Relaciones Salida -> Usuario destino (opcional)
-            modelBuilder.Entity<Salida>()
-                .HasOne(s => s.UsuarioDestino)
-                .WithMany(u => u.SalidasDestino)
-                .HasForeignKey(s => s.IdUsuarioDestino)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones DetalleSalida -> Salida
             modelBuilder.Entity<DetalleSalida>()

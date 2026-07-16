@@ -77,7 +77,7 @@ namespace Services
                 FechaModificacion = s.FechaModificacion,
                 CreadoPor = s.CreadoPor,
                 ModificadoPor = s.ModificadoPor,
-                Detalles = s.DetallesSalida.Select(d => new DetalleSalidaResponseDTO
+                Activos = s.DetallesSalida.Select(d => new DetalleSalidaResponseDTO
                 {
                     IdDetalleSalida = d.IdDetalleSalida,
                     IdSalida = d.IdSalida,

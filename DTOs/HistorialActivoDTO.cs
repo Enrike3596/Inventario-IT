@@ -24,6 +24,8 @@ namespace DTOs
         public string? Serial { get; set; }
         public int? IdSalida { get; set; }
         public string? CodigoSalida { get; set; }
+        public string? EstadoActivoSalida { get; set; }
+        public string? Observaciones { get; set; }
         public TipoMovimiento TipoMovimiento { get; set; }
         public DateTime FechaMovimiento { get; set; }
         public int? IdUsuarioEntrega { get; set; }

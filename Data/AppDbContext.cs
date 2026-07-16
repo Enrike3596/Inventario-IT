@@ -204,7 +204,7 @@ namespace Data
                 .HasOne(h => h.Salida)
                 .WithMany(s => s.HistorialActivos)
                 .HasForeignKey(h => h.IdSalida)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Relaciones HistorialActivo -> UsuarioEntrega
             modelBuilder.Entity<HistorialActivo>()

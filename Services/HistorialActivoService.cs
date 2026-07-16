@@ -40,6 +40,8 @@ namespace Services
                 Serial = h.Activo?.Serial,
                 IdSalida = h.IdSalida,
                 CodigoSalida = h.Salida?.CodigoUnico,
+                EstadoActivoSalida = h.Salida != null ? h.Salida.EstadoActivo.ToString() : null,
+                Observaciones = h.Salida?.Observaciones,
                 TipoMovimiento = h.TipoMovimiento,
                 FechaMovimiento = h.FechaMovimiento,
                 IdUsuarioEntrega = h.IdUsuarioEntrega,

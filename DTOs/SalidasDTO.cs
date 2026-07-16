@@ -40,7 +40,7 @@ namespace DTOs
         public EstadoActivo EstadoActivo { get; set; }
         public DateTime FechaSalida { get; set; }
         public string? Observaciones { get; set; }
-        public List<DetalleSalidaResponseDTO> Detalles { get; set; } = new();
+        public List<DetalleSalidaResponseDTO> Activos { get; set; } = new();
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

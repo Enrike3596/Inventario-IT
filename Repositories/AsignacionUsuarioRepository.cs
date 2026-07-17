@@ -12,6 +12,7 @@ namespace Repositories
         Task<List<AsignacionUsuario>> ObtenerTodosAsync();
         Task<AsignacionUsuario?> ObtenerPorIdAsync(int id);
         Task<List<AsignacionUsuario>> ObtenerPorActivoAsync(int idActivo);
+        Task<List<AsignacionUsuario>> ObtenerPorIdsAsync(List<int> ids);
         Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion);
         Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
         Task<AsignacionUsuario?> DesactivarAsync(int id);
@@ -63,6 +64,14 @@ namespace Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<AsignacionUsuario>> ObtenerPorIdsAsync(List<int> ids)
+        {
+            return await _context.AsignacionesUsuario
+                .Include(a => a.Usuario)
+                .Where(a => ids.Contains(a.IdAsignacion))
+                .ToListAsync();
+        }
+
         public async Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion)
         {
             var activa = await _context.AsignacionesUsuario
@@ -91,9 +100,12 @@ namespace Repositories
                 _context.HistorialActivos.Add(new HistorialActivo
                 {
                     IdActivo = asignacion.IdActivo,
+                    IdAsignacion = asignacion.IdAsignacion,
                     TipoMovimiento = TipoMovimiento.Asignacion,
                     FechaMovimiento = DateTime.UtcNow,
-                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega
+                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                    EstadoAnterior = EstadoActivo.Disponible.ToString(),
+                    EstadoNuevo = EstadoActivo.Asignado.ToString()
                 });
                 await _context.SaveChangesAsync();
             }
@@ -133,9 +145,12 @@ namespace Repositories
                     _context.HistorialActivos.Add(new HistorialActivo
                     {
                         IdActivo = asignacion.IdActivo,
+                        IdAsignacion = asignacion.IdAsignacion,
                         TipoMovimiento = TipoMovimiento.Devolucion,
                         FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega
+                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
+                        EstadoAnterior = EstadoActivo.Asignado.ToString(),
+                        EstadoNuevo = EstadoActivo.Disponible.ToString()
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -149,9 +164,12 @@ namespace Repositories
                     _context.HistorialActivos.Add(new HistorialActivo
                     {
                         IdActivo = asignacion.IdActivo,
+                        IdAsignacion = asignacion.IdAsignacion,
                         TipoMovimiento = TipoMovimiento.Asignacion,
                         FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega
+                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
+                        EstadoAnterior = EstadoActivo.Disponible.ToString(),
+                        EstadoNuevo = EstadoActivo.Asignado.ToString()
                     });
                     await _context.SaveChangesAsync();
                 }
@@ -180,9 +198,12 @@ namespace Repositories
                 _context.HistorialActivos.Add(new HistorialActivo
                 {
                     IdActivo = asignacion.IdActivo,
+                    IdAsignacion = asignacion.IdAsignacion,
                     TipoMovimiento = TipoMovimiento.Devolucion,
                     FechaMovimiento = DateTime.UtcNow,
-                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega
+                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                    EstadoAnterior = EstadoActivo.Asignado.ToString(),
+                    EstadoNuevo = EstadoActivo.Disponible.ToString()
                 });
                 await _context.SaveChangesAsync();
             }

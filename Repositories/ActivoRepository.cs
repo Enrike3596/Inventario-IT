@@ -75,6 +75,16 @@ namespace Repositories
             try
             {
                 await _context.SaveChangesAsync();
+
+                _context.HistorialActivos.Add(new HistorialActivo
+                {
+                    IdActivo = activo.IdActivo,
+                    TipoMovimiento = TipoMovimiento.Entrada,
+                    FechaMovimiento = DateTime.UtcNow,
+                    EstadoNuevo = EstadoActivo.Disponible.ToString()
+                });
+                await _context.SaveChangesAsync();
+
                 await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
                 await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
                 return activo;
@@ -101,6 +111,8 @@ namespace Repositories
         {
             var activo = await _context.Activos.FindAsync(id);
             if (activo == null) return null;
+
+            var estadoAnterior = activo.EstadoActivo;
 
             if (dto.IdCategoria != activo.IdCategoria)
                 activo.IdCategoria = dto.IdCategoria;
@@ -131,6 +143,33 @@ namespace Repositories
             activo.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
 
             await _context.SaveChangesAsync();
+
+            if (estadoAnterior != dto.EstadoActivo)
+            {
+                var tipoMovimiento = TipoMovimiento.Entrada;
+                if (dto.EstadoActivo == EstadoActivo.EnReparacion)
+                    tipoMovimiento = TipoMovimiento.Reparacion;
+                else if (dto.EstadoActivo == EstadoActivo.Venta)
+                    tipoMovimiento = TipoMovimiento.Salida;
+                else if (dto.EstadoActivo == EstadoActivo.DadoDeBaja)
+                    tipoMovimiento = TipoMovimiento.Baja;
+                else if (dto.EstadoActivo == EstadoActivo.Asignado)
+                    tipoMovimiento = TipoMovimiento.Asignacion;
+                else if (dto.EstadoActivo == EstadoActivo.Disponible && estadoAnterior != EstadoActivo.Disponible)
+                    tipoMovimiento = TipoMovimiento.Devolucion;
+
+                _context.HistorialActivos.Add(new HistorialActivo
+                {
+                    IdActivo = activo.IdActivo,
+                    TipoMovimiento = tipoMovimiento,
+                    FechaMovimiento = DateTime.UtcNow,
+                    EstadoAnterior = estadoAnterior.ToString(),
+                    EstadoNuevo = dto.EstadoActivo.ToString(),
+                    Observaciones = dto.Observaciones ?? dto.MotivoEdicion
+                });
+                await _context.SaveChangesAsync();
+            }
+
             await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
             await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
             return activo;
@@ -141,9 +180,21 @@ namespace Repositories
             var activo = await _context.Activos.FindAsync(id);
             if (activo == null) return false;
 
+            var estadoAnterior = activo.EstadoActivo;
             activo.EstadoActivo = EstadoActivo.DadoDeBaja;
             activo.FechaBaja = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+
+            _context.HistorialActivos.Add(new HistorialActivo
+            {
+                IdActivo = activo.IdActivo,
+                TipoMovimiento = TipoMovimiento.Baja,
+                FechaMovimiento = DateTime.UtcNow,
+                EstadoAnterior = estadoAnterior.ToString(),
+                EstadoNuevo = EstadoActivo.DadoDeBaja.ToString()
+            });
+            await _context.SaveChangesAsync();
+
             return true;
         }
     }

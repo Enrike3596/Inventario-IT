@@ -57,13 +57,16 @@ namespace Repositories
                 var activo = await _context.Activos.FindAsync(detalle.IdActivo);
                 if (activo != null)
                 {
+                    var estadoAnterior = activo.EstadoActivo;
                     activo.EstadoActivo = salida.EstadoActivo;
                     _context.HistorialActivos.Add(new HistorialActivo
                     {
                         IdActivo = detalle.IdActivo,
                         IdSalida = salida.IdSalida,
                         TipoMovimiento = TipoMovimiento.Salida,
-                        FechaMovimiento = DateTime.UtcNow
+                        FechaMovimiento = DateTime.UtcNow,
+                        EstadoAnterior = estadoAnterior.ToString(),
+                        EstadoNuevo = salida.EstadoActivo.ToString()
                     });
                 }
             }

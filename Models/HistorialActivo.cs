@@ -15,11 +15,18 @@ namespace Models
         [ForeignKey("Salida")]
         public int? IdSalida { get; set; }
 
+        [ForeignKey("Asignacion")]
+        public int? IdAsignacion { get; set; }
+
         public TipoMovimiento TipoMovimiento { get; set; }
         public DateTime FechaMovimiento { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UsuarioEntrega")]
         public int? IdUsuarioEntrega { get; set; }
+
+        public string? EstadoAnterior { get; set; }
+        public string? EstadoNuevo { get; set; }
+        public string? Observaciones { get; set; }
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
@@ -28,6 +35,7 @@ namespace Models
 
         public virtual Activos Activo { get; set; } = null!;
         public virtual Salida? Salida { get; set; }
+        public virtual AsignacionUsuario? Asignacion { get; set; }
         public virtual Usuarios? UsuarioEntrega { get; set; }
     }
 }

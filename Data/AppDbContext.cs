@@ -213,6 +213,13 @@ namespace Data
                 .HasForeignKey(h => h.IdUsuarioEntrega)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Relaciones HistorialActivo -> AsignacionUsuario
+            modelBuilder.Entity<HistorialActivo>()
+                .HasOne(h => h.Asignacion)
+                .WithMany()
+                .HasForeignKey(h => h.IdAsignacion)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Relaciones ItemOC -> OrdenCompra
             modelBuilder.Entity<ItemOC>()
                 .HasOne(i => i.OrdenCompra)

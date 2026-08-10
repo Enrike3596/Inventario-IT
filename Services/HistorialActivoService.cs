@@ -107,6 +107,7 @@ namespace Services
                 IdAsignacion = h.IdAsignacion,
                 NombreUsuarioAsignado = asignacion?.Usuario?.Nombre,
                 RegistroSalidaAsignacion = asignacion?.RegistroSalida,
+                NombreCanal = asignacion?.CanalSolicitud?.Nombre,
                 EstadoAnterior = h.EstadoAnterior,
                 EstadoNuevo = h.EstadoNuevo,
                 FechaCreacion = h.FechaCreacion,

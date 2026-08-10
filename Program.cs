@@ -5,13 +5,19 @@ using Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Middleware;
+using QuestPDF.Infrastructure;
 using Repositories;
 using Services;
+using Services.ActaFirma;
+using Services.Emails;
+using Services.FileStorage;
 
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +78,8 @@ builder.Services.AddScoped<ISalidaRepository, SalidaRepository>();
 builder.Services.AddScoped<IDetalleSalidaRepository, DetalleSalidaRepository>();
 builder.Services.AddScoped<IHistorialActivoRepository, HistorialActivoRepository>();
 builder.Services.AddScoped<IAsignacionUsuarioRepository, AsignacionUsuarioRepository>();
+builder.Services.AddScoped<IActaFirmaRepository, ActaFirmaRepository>();
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 
 builder.Services.AddScoped<IActivoService, ActivoService>();
 builder.Services.AddScoped<IItemOCService, ItemOCService>();
@@ -87,6 +95,19 @@ builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<ISalidaService, SalidaService>();
 builder.Services.AddScoped<ISedeService, SedeService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+builder.Services.Configure<FirmaElectronicaSettings>(builder.Configuration.GetSection("FirmaElectronica"));
+builder.Services.AddScoped<IActaFirmaService, ActaFirmaService>();
+builder.Services.AddScoped<IAreaService, AreaService>();
+builder.Services.AddScoped<ReporteInventarioService>();
+builder.Services.AddScoped<IReporteExportador, ReporteExportador>();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<FileStorageSettings>(builder.Configuration.GetSection("FileStorage"));
+
+builder.Services.AddSingleton<IEmailTemplate, EmailTemplate>();
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddOpenApi();
@@ -155,6 +176,15 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+var uploadsPath = Path.GetFullPath(builder.Configuration.GetSection("FileStorage:BasePath").Value ?? "uploads");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = builder.Configuration.GetSection("FileStorage:BaseUrl").Value ?? "/uploads"
+});
+
 app.MapControllers();
 
 app.Run();

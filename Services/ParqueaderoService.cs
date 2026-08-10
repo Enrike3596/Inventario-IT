@@ -8,6 +8,7 @@ namespace Services
     {
         Task<List<ParqueaderoResponseDTO>> ObtenerTodosAsync();
         Task<ParqueaderoResponseDTO?> ObtenerPorIdAsync(int id);
+        Task<ParqueaderoResponseDTO?> ObtenerPorDAAsync(string da);
         Task<ParqueaderoResponseDTO> CrearAsync(ParqueaderoCreateDTO dto);
         Task<ParqueaderoResponseDTO?> ActualizarAsync(int id, ParqueaderoUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
@@ -34,11 +35,17 @@ namespace Services
             return parqueadero == null ? null : MapToDTO(parqueadero);
         }
 
+        public async Task<ParqueaderoResponseDTO?> ObtenerPorDAAsync(string da)
+        {
+            var parqueadero = await _repo.ObtenerPorDAAsync(da);
+            return parqueadero == null ? null : MapToDTO(parqueadero);
+        }
+
         public async Task<ParqueaderoResponseDTO> CrearAsync(ParqueaderoCreateDTO dto)
         {
             var parqueadero = new Parqueadero
             {
-                IdSede = dto.IdSede,
+                DA = dto.DA,
                 Nombre = dto.Nombre,
                 Ubicacion = dto.Ubicacion
             };
@@ -63,8 +70,7 @@ namespace Services
             return new ParqueaderoResponseDTO
             {
                 IdParqueadero = p.IdParqueadero,
-                IdSede = p.IdSede,
-                NombreSede = p.Sede?.Nombre,
+                DA = p.DA,
                 Nombre = p.Nombre,
                 Ubicacion = p.Ubicacion,
                 Estado = p.Estado,

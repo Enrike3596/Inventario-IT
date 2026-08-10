@@ -26,11 +26,13 @@ namespace Services
     public class UsuarioService : IUsuarioService
     {
         private readonly IUsuarioRepository _repo;
+        private readonly IRolRepository _rolRepo;
         private readonly IConfiguration _configuration;
 
-        public UsuarioService(IUsuarioRepository repo, IConfiguration configuration)
+        public UsuarioService(IUsuarioRepository repo, IRolRepository rolRepo, IConfiguration configuration)
         {
             _repo = repo;
+            _rolRepo = rolRepo;
             _configuration = configuration;
         }
 
@@ -54,15 +56,21 @@ namespace Services
 
         public async Task<UsuarioResponseDTO> CrearAsync(UsuarioCreateDTO dto)
         {
+            var rol = await _rolRepo.ObtenerPorIdAsync(dto.IdRol);
+            var esUsuarioFinal = rol?.Tipo == "usuario";
+
             var usuario = new Usuarios
             {
                 IdRol = dto.IdRol,
                 IdSede = dto.IdSede,
+                IdArea = dto.IdArea,
                 Nombre = dto.Nombre,
                 Correo = dto.Correo,
                 Telefono = dto.Telefono,
                 Cargo = dto.Cargo,
-                Contraseña = PasswordHelper.Hash(dto.Contraseña)
+                Contraseña = esUsuarioFinal && string.IsNullOrEmpty(dto.Contraseña)
+                    ? PasswordHelper.Hash("SinAcceso123*")
+                    : PasswordHelper.Hash(dto.Contraseña!)
             };
 
             var creado = await _repo.CrearAsync(usuario);
@@ -88,6 +96,9 @@ namespace Services
 
             if (usuario.EstadoUsuario != EstadoUsuario.Activo)
                 throw new UnauthorizedAccessException("El usuario se encuentra inactivo.");
+
+            if (usuario.Rol?.Tipo == "usuario")
+                throw new UnauthorizedAccessException("Este usuario no tiene acceso al sistema.");
 
             if (!PasswordHelper.Verify(dto.Password, usuario.Contraseña))
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
@@ -207,6 +218,8 @@ namespace Services
                 NombreRol = u.Rol?.Nombre,
                 IdSede = u.IdSede,
                 NombreSede = u.Sede?.Nombre,
+                IdArea = u.IdArea,
+                NombreArea = u.Area?.NombreArea,
                 Nombre = u.Nombre,
                 Correo = u.Correo,
                 Telefono = u.Telefono,

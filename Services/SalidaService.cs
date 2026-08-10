@@ -71,6 +71,7 @@ namespace Services
                 IdSalida = s.IdSalida,
                 CodigoUnico = s.CodigoUnico,
                 EstadoActivo = s.EstadoActivo,
+                Estado = s.Estado,
                 FechaSalida = s.FechaSalida,
                 Observaciones = s.Observaciones,
                 FechaCreacion = s.FechaCreacion,

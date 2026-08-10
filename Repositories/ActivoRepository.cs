@@ -15,6 +15,7 @@ namespace Repositories
         Task<Activos> CrearAsync(Activos activo);
         Task<Activos?> ActualizarAsync(int id, ActivoUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
+        Task<Activos?> RegistrarRegresoReparacionAsync(int id, RegresoReparacionDTO dto);
     }
 
     public class ActivoRepository : IActivoRepository
@@ -70,6 +71,17 @@ namespace Repositories
             if (string.IsNullOrWhiteSpace(activo.Modelo))
                 throw new ArgumentException("Modelo no puede ser vacío.", nameof(activo));
 
+            // Marcar DetalleItemOC como procesado si viene vinculado
+            if (activo.IdDetalleItemOC.HasValue)
+            {
+                var detalle = await _context.DetallesItemOC.FindAsync(activo.IdDetalleItemOC.Value);
+                if (detalle != null && !detalle.Procesado)
+                {
+                    detalle.Procesado = true;
+                    detalle.Activo = activo;
+                }
+            }
+
             _context.Activos.Add(activo);
 
             try
@@ -114,33 +126,31 @@ namespace Repositories
 
             var estadoAnterior = activo.EstadoActivo;
 
-            if (dto.IdCategoria != activo.IdCategoria)
+            if (dto.IdCategoria != 0 && dto.IdCategoria != activo.IdCategoria)
                 activo.IdCategoria = dto.IdCategoria;
 
-            if (dto.IdOrden != activo.IdOrden)
+            if (dto.IdOrden != 0 && dto.IdOrden != activo.IdOrden)
                 activo.IdOrden = dto.IdOrden;
 
-            var serial = (dto.Serial ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(serial))
-                throw new ArgumentException("Serial no puede ser vacío.", nameof(dto.Serial));
-            activo.Serial = serial;
+            if (!string.IsNullOrWhiteSpace(dto.Serial))
+                activo.Serial = dto.Serial.Trim();
 
-            var marca = (dto.Marca ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(marca))
-                throw new ArgumentException("Marca no puede ser vacía.", nameof(dto.Marca));
-            activo.Marca = marca;
+            if (!string.IsNullOrWhiteSpace(dto.Marca))
+                activo.Marca = dto.Marca.Trim();
 
-            var modelo = (dto.Modelo ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(modelo))
-                throw new ArgumentException("Modelo no puede ser vacío.", nameof(dto.Modelo));
-            activo.Modelo = modelo;
+            if (!string.IsNullOrWhiteSpace(dto.Modelo))
+                activo.Modelo = dto.Modelo.Trim();
 
-            activo.Referencia = (dto.Referencia ?? string.Empty).Trim();
             activo.EstadoActivo = dto.EstadoActivo;
-            activo.FechaBaja = dto.FechaBaja;
-            activo.Observaciones = dto.Observaciones;
 
-            activo.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+            if (dto.FechaBaja.HasValue)
+                activo.FechaBaja = dto.FechaBaja;
+
+            if (dto.Observaciones != null)
+                activo.Observaciones = dto.Observaciones;
+
+            if (dto.MotivoEdicion != null)
+                activo.MotivoEdicion = dto.MotivoEdicion.Trim();
 
             await _context.SaveChangesAsync();
 
@@ -196,6 +206,68 @@ namespace Repositories
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<Activos?> RegistrarRegresoReparacionAsync(int id, RegresoReparacionDTO dto)
+        {
+            var activo = await _context.Activos
+                .Include(a => a.DetallesSalida)
+                    .ThenInclude(ds => ds.Salida)
+                .FirstOrDefaultAsync(a => a.IdActivo == id);
+
+            if (activo == null) return null;
+
+            if (activo.EstadoActivo != EstadoActivo.EnReparacion)
+                throw new InvalidOperationException("El activo no está en estado 'En reparación'.");
+
+            var estadoAnterior = activo.EstadoActivo;
+
+            // Find the active repair salida for this asset
+            var salidaReparacion = activo.DetallesSalida
+                .Where(ds => ds.Salida != null && ds.Salida.EstadoActivo == EstadoActivo.EnReparacion && ds.Salida.Estado)
+                .Select(ds => ds.Salida)
+                .FirstOrDefault();
+
+            // Update asset state to Disponible
+            activo.EstadoActivo = EstadoActivo.Disponible;
+            activo.FechaModificacion = DateTime.UtcNow;
+
+            // Create Devolucion movement in HistorialActivo
+            _context.HistorialActivos.Add(new HistorialActivo
+            {
+                IdActivo = activo.IdActivo,
+                IdSalida = salidaReparacion?.IdSalida,
+                TipoMovimiento = TipoMovimiento.Devolucion,
+                FechaMovimiento = DateTime.UtcNow,
+                EstadoAnterior = estadoAnterior.ToString(),
+                EstadoNuevo = EstadoActivo.Disponible.ToString(),
+                Observaciones = dto.Observaciones
+            });
+
+            // Optionally update the salida to mark it as completed (if needed)
+            if (salidaReparacion != null)
+            {
+                // Check if all assets in this salida are now Disponible
+                var allDisponible = await _context.DetallesSalida
+                    .Where(ds => ds.IdSalida == salidaReparacion.IdSalida)
+                    .AllAsync(ds => _context.Activos
+                        .Where(a => a.IdActivo == ds.IdActivo)
+                        .Select(a => a.EstadoActivo)
+                        .FirstOrDefault() == EstadoActivo.Disponible);
+
+                if (allDisponible)
+                {
+                    salidaReparacion.Estado = false; // Mark salida as completed/inactive
+                    salidaReparacion.FechaModificacion = DateTime.UtcNow;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
+            await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
+
+            return activo;
         }
     }
 }

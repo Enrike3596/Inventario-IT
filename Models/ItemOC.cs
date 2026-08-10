@@ -15,20 +15,16 @@ namespace Models
         public int IdCategoria { get; set; }
 
         [Required, MaxLength(100)]
-        public string NombreProducto { get; set; } = null!;
-
-        [Required, MaxLength(100)]
         public string Marca { get; set; } = null!;
 
         [Required, MaxLength(100)]
         public string Modelo { get; set; } = null!;
 
-        [MaxLength(100)]
-        public string? Referencia { get; set; }
-
         public string? Observaciones { get; set; }
 
         public int CantidadEsperada { get; set; }
+
+        public bool Estado { get; set; } = true;
 
         public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;

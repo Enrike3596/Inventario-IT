@@ -27,6 +27,7 @@ namespace DTOs
         public int IdItemOC { get; set; }
         public string Serial { get; set; } = null!;
         public bool Procesado { get; set; }
+        public bool Estado { get; set; }
         public int? IdActivo { get; set; }
         public string? CodigoActivo { get; set; }
         public string? Observaciones { get; set; }

@@ -28,7 +28,7 @@ namespace Repositories
             return await _context.ItemsOC
                 .Include(i => i.Categoria)
                 .Include(i => i.DetallesItem)
-                .Where(i => i.IdOrden == idOrden)
+                .Where(i => i.IdOrden == idOrden && i.Estado)
                 .OrderBy(i => i.IdItemOC)
                 .ToListAsync();
         }
@@ -38,15 +38,11 @@ namespace Repositories
             return await _context.ItemsOC
                 .Include(i => i.Categoria)
                 .Include(i => i.DetallesItem)
-                .FirstOrDefaultAsync(i => i.IdItemOC == id);
+                .FirstOrDefaultAsync(i => i.IdItemOC == id && i.Estado);
         }
 
         public async Task<ItemOC> CrearAsync(ItemOC item)
         {
-            item.NombreProducto = (item.NombreProducto ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(item.NombreProducto))
-                throw new ArgumentException("Nombre del producto no puede ser vacío.", nameof(item));
-
             item.Marca = (item.Marca ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(item.Marca))
                 throw new ArgumentException("Marca no puede ser vacía.", nameof(item));
@@ -67,11 +63,6 @@ namespace Repositories
 
             item.IdCategoria = dto.IdCategoria;
 
-            var nombre = (dto.NombreProducto ?? string.Empty).Trim();
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("Nombre del producto no puede ser vacío.", nameof(dto.NombreProducto));
-            item.NombreProducto = nombre;
-
             var marca = (dto.Marca ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(marca))
                 throw new ArgumentException("Marca no puede ser vacía.", nameof(dto.Marca));
@@ -82,7 +73,6 @@ namespace Repositories
                 throw new ArgumentException("Modelo no puede ser vacío.", nameof(dto.Modelo));
             item.Modelo = modelo;
 
-            item.Referencia = (dto.Referencia ?? string.Empty).Trim();
             item.Observaciones = (dto.Observaciones ?? string.Empty).Trim();
             item.CantidadEsperada = dto.CantidadEsperada;
 
@@ -102,8 +92,10 @@ namespace Repositories
             if (item.DetallesItem.Any(d => d.Procesado))
                 throw new InvalidOperationException("No se puede eliminar un item con seriales ya procesados.");
 
-            _context.DetallesItemOC.RemoveRange(item.DetallesItem);
-            _context.ItemsOC.Remove(item);
+            foreach (var detalle in item.DetallesItem)
+                detalle.Estado = false;
+
+            item.Estado = false;
             await _context.SaveChangesAsync();
             return true;
         }

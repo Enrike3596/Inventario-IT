@@ -18,6 +18,5 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual ICollection<Usuarios> Usuarios { get; set; } = new List<Usuarios>();
-        public virtual ICollection<Parqueadero> Parqueaderos { get; set; } = new List<Parqueadero>();
     }
 }

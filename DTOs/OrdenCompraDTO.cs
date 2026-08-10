@@ -40,6 +40,7 @@ namespace DTOs
         public decimal Total { get; set; }
         public string? Observaciones { get; set; }
         public DateTime FechaCompra { get; set; }
+        public bool Estado { get; set; }
         public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
@@ -55,6 +56,7 @@ namespace DTOs
         public decimal Total { get; set; }
         public string Observaciones { get; set; } = null!;
         public DateTime FechaCompra { get; set; }
+        public bool Estado { get; set; }
         public List<ItemOCResponseDTO> ItemsOC { get; set; } = new();
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }

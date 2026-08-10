@@ -13,6 +13,7 @@ namespace Services
         Task<ActivoResponseDTO> CrearAsync(ActivoCreateDTO dto);
         Task<ActivoResponseDTO?> ActualizarAsync(int id, ActivoUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
+        Task<ActivoResponseDTO?> RegistrarRegresoReparacionAsync(int id, RegresoReparacionDTO dto);
     }
 
     public class ActivoService : IActivoService
@@ -54,7 +55,6 @@ namespace Services
                 Serial = dto.Serial,
                 Marca = dto.Marca,
                 Modelo = dto.Modelo,
-                Referencia = dto.Referencia,
                 EstadoActivo = EstadoActivo.Disponible,
                 FechaAdquisicion = dto.FechaAdquisicion,
                 Observaciones = dto.Observaciones
@@ -75,6 +75,12 @@ namespace Services
             return await _repo.EliminarAsync(id);
         }
 
+        public async Task<ActivoResponseDTO?> RegistrarRegresoReparacionAsync(int id, RegresoReparacionDTO dto)
+        {
+            var actualizado = await _repo.RegistrarRegresoReparacionAsync(id, dto);
+            return actualizado == null ? null : MapToDTO(actualizado);
+        }
+
         private static ActivoResponseDTO MapToDTO(Activos a)
         {
             return new ActivoResponseDTO
@@ -90,7 +96,6 @@ namespace Services
                 Serial = a.Serial,
                 Marca = a.Marca,
                 Modelo = a.Modelo,
-                Referencia = a.Referencia,
                 EstadoActivo = a.EstadoActivo,
                 FechaAdquisicion = a.FechaAdquisicion,
                 FechaBaja = a.FechaBaja,

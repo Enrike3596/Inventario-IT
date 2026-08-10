@@ -16,6 +16,8 @@ namespace Models
         public DateTime FechaSalida { get; set; }
         public string? Observaciones { get; set; }
 
+        public bool Estado { get; set; } = true;
+
         public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }

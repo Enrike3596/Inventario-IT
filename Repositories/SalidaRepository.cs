@@ -29,6 +29,7 @@ namespace Repositories
             return await _context.Salidas
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
+                .Where(s => s.Estado)
                 .OrderByDescending(s => s.FechaSalida)
                 .ToListAsync();
         }
@@ -38,7 +39,7 @@ namespace Repositories
             return await _context.Salidas
                 .Include(s => s.DetallesSalida)
                     .ThenInclude(d => d.Activo)
-                .FirstOrDefaultAsync(s => s.IdSalida == id);
+                .FirstOrDefaultAsync(s => s.IdSalida == id && s.Estado);
         }
 
         public async Task<Salida> CrearAsync(Salida salida, List<DetalleSalida> detalles)
@@ -100,13 +101,42 @@ namespace Repositories
 
         public async Task<Salida?> ActualizarAsync(int id, SalidaUpdateDTO dto)
         {
-            var salida = await _context.Salidas.FindAsync(id);
+            var salida = await _context.Salidas
+                .Include(s => s.DetallesSalida)
+                .FirstOrDefaultAsync(s => s.IdSalida == id);
             if (salida == null) return null;
 
+            var estadoAnterior = salida.EstadoActivo;
+            salida.EstadoActivo = dto.EstadoActivo;
             salida.Observaciones = dto.Observaciones ?? salida.Observaciones;
             salida.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+            salida.FechaModificacion = DateTime.UtcNow;
+
+            if (estadoAnterior != dto.EstadoActivo)
+            {
+                foreach (var detalle in salida.DetallesSalida)
+                {
+                    var activo = await _context.Activos.FindAsync(detalle.IdActivo);
+                    if (activo != null)
+                    {
+                        activo.EstadoActivo = dto.EstadoActivo;
+                        _context.HistorialActivos.Add(new HistorialActivo
+                        {
+                            IdActivo = detalle.IdActivo,
+                            IdSalida = salida.IdSalida,
+                            TipoMovimiento = TipoMovimiento.Salida,
+                            FechaMovimiento = DateTime.UtcNow,
+                            EstadoAnterior = estadoAnterior.ToString(),
+                            EstadoNuevo = dto.EstadoActivo.ToString()
+                        });
+                    }
+                }
+            }
 
             await _context.SaveChangesAsync();
+
+            await _context.Entry(salida).Collection(s => s.DetallesSalida).LoadAsync();
+
             return salida;
         }
 
@@ -120,11 +150,24 @@ namespace Repositories
             foreach (var detalle in salida.DetallesSalida)
             {
                 var activo = await _context.Activos.FindAsync(detalle.IdActivo);
-                if (activo != null)
+                if (activo != null && activo.EstadoActivo != EstadoActivo.Disponible)
+                {
+                    var estadoAnterior = activo.EstadoActivo;
                     activo.EstadoActivo = EstadoActivo.Disponible;
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = detalle.IdActivo,
+                        IdSalida = salida.IdSalida,
+                        TipoMovimiento = TipoMovimiento.Devolucion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        EstadoAnterior = estadoAnterior.ToString(),
+                        EstadoNuevo = EstadoActivo.Disponible.ToString(),
+                        Observaciones = $"Salida anulada ({salida.CodigoUnico})"
+                    });
+                }
             }
 
-            _context.Salidas.Remove(salida);
+            salida.Estado = false;
             await _context.SaveChangesAsync();
             return true;
         }

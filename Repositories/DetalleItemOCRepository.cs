@@ -29,7 +29,7 @@ namespace Repositories
             return await _context.DetallesItemOC
                 .Include(d => d.ItemOC)
                 .Include(d => d.Activo)
-                .Where(d => d.IdItemOC == idItemOC)
+                .Where(d => d.IdItemOC == idItemOC && d.Estado)
                 .OrderBy(d => d.IdDetalleItemOC)
                 .ToListAsync();
         }
@@ -39,7 +39,7 @@ namespace Repositories
             return await _context.DetallesItemOC
                 .Include(d => d.ItemOC)
                 .Include(d => d.Activo)
-                .FirstOrDefaultAsync(d => d.IdDetalleItemOC == id);
+                .FirstOrDefaultAsync(d => d.IdDetalleItemOC == id && d.Estado);
         }
 
         public async Task<DetalleItemOC> CrearAsync(DetalleItemOC detalle)
@@ -48,7 +48,7 @@ namespace Repositories
             if (string.IsNullOrWhiteSpace(serial))
                 throw new ArgumentException("Serial no puede ser vacío.", nameof(detalle));
 
-            if (await _context.DetallesItemOC.AnyAsync(d => d.Serial.ToLower() == serial.ToLower()))
+            if (await _context.DetallesItemOC.AnyAsync(d => d.Estado && d.Serial.ToLower() == serial.ToLower()))
                 throw new InvalidOperationException($"El serial '{serial}' ya fue registrado en esta orden.");
 
             detalle.Serial = serial;
@@ -66,7 +66,7 @@ namespace Repositories
                 throw new ArgumentException("El item de OC no existe.");
 
             var existentes = await _context.DetallesItemOC
-                .Where(d => d.IdItemOC == idItemOC)
+                .Where(d => d.IdItemOC == idItemOC && d.Estado)
                 .Select(d => d.Serial.ToLower())
                 .ToListAsync();
 
@@ -120,7 +120,7 @@ namespace Repositories
             if (detalle.Procesado)
                 throw new InvalidOperationException("No se puede eliminar un serial ya procesado.");
 
-            _context.DetallesItemOC.Remove(detalle);
+            detalle.Estado = false;
             await _context.SaveChangesAsync();
             return true;
         }

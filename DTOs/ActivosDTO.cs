@@ -3,6 +3,12 @@ using Enums;
 
 namespace DTOs
 {
+    public class RegresoReparacionDTO
+    {
+        [Required(ErrorMessage = "Las observaciones son obligatorias")]
+        public string Observaciones { get; set; } = null!;
+    }
+
     public class ActivoCreateDTO
     {
         [Required(ErrorMessage = "La categoría es obligatoria")]
@@ -26,8 +32,6 @@ namespace DTOs
         [Required(ErrorMessage = "El modelo es obligatorio")]
         public string Modelo { get; set; } = null!;
 
-        public string? Referencia { get; set; }
-
         public DateTime FechaAdquisicion { get; set; } = DateTime.UtcNow;
 
         public string? Observaciones { get; set; }
@@ -49,8 +53,6 @@ namespace DTOs
 
         [Required(ErrorMessage = "El modelo es obligatorio")]
         public string Modelo { get; set; } = null!;
-
-        public string? Referencia { get; set; }
 
         public EstadoActivo EstadoActivo { get; set; } = EstadoActivo.Disponible;
 
@@ -74,7 +76,6 @@ namespace DTOs
         public string Serial { get; set; } = null!;
         public string Marca { get; set; } = null!;
         public string Modelo { get; set; } = null!;
-        public string? Referencia { get; set; }
         public EstadoActivo EstadoActivo { get; set; }
         public DateTime FechaAdquisicion { get; set; }
         public DateTime? FechaBaja { get; set; }

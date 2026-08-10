@@ -26,7 +26,9 @@ namespace Repositories
 
         public async Task<List<Canal>> ObtenerTodosAsync()
         {
-            return await _context.Canales.ToListAsync();
+            return await _context.Canales
+                .Where(c => c.Estado)
+                .ToListAsync();
         }
 
         public async Task<Canal?> ObtenerPorIdAsync(int id)
@@ -84,7 +86,7 @@ namespace Repositories
             var canal = await _context.Canales.FindAsync(id);
             if (canal == null) return false;
 
-            _context.Canales.Remove(canal);
+            canal.Estado = false;
             await _context.SaveChangesAsync();
             return true;
         }

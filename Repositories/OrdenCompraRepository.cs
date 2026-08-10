@@ -34,6 +34,7 @@ namespace Repositories
                     .ThenInclude(i => i.Categoria)
                 .Include(o => o.ItemsOC)
                     .ThenInclude(i => i.DetallesItem)
+                .Where(o => o.Estado)
                 .OrderByDescending(o => o.FechaCompra)
                 .ToListAsync();
         }
@@ -50,7 +51,7 @@ namespace Repositories
                     .ThenInclude(i => i.Categoria)
                 .Include(o => o.ItemsOC)
                     .ThenInclude(i => i.DetallesItem)
-                .FirstOrDefaultAsync(o => o.IdOrden == id);
+                .FirstOrDefaultAsync(o => o.IdOrden == id && o.Estado);
         }
 
         public async Task<OrdenCompra> CrearAsync(OrdenCompra orden)
@@ -125,9 +126,14 @@ namespace Repositories
             }
 
             var detalles = orden.ItemsOC.SelectMany(i => i.DetallesItem).ToList();
-            _context.DetallesItemOC.RemoveRange(detalles);
-            _context.ItemsOC.RemoveRange(orden.ItemsOC);
-            _context.OrdenesCompra.Remove(orden);
+
+            foreach (var detalle in detalles)
+                detalle.Estado = false;
+
+            foreach (var item in orden.ItemsOC)
+                item.Estado = false;
+
+            orden.Estado = false;
             await _context.SaveChangesAsync();
             return true;
         }
@@ -137,58 +143,25 @@ namespace Repositories
             var orden = await _context.OrdenesCompra
                 .Include(o => o.ItemsOC)
                     .ThenInclude(i => i.DetallesItem)
-                .Include(o => o.ItemsOC)
-                    .ThenInclude(i => i.Categoria)
-                .FirstOrDefaultAsync(o => o.IdOrden == idOrden);
+                .FirstOrDefaultAsync(o => o.IdOrden == idOrden && o.Estado);
 
             if (orden == null)
                 throw new ArgumentException("Orden de compra no encontrada.");
 
-            var activosCreados = new List<Activos>();
-            var now = DateTime.UtcNow;
-            var nextCodigo = await _context.Activos.MaxAsync(a => (int?)a.IdActivo) ?? 0;
+            var pendientes = orden.ItemsOC
+                .SelectMany(i => i.DetallesItem.Where(d => !d.Procesado))
+                .ToList();
 
-            foreach (var item in orden.ItemsOC)
-            {
-                foreach (var detalle in item.DetallesItem.Where(d => !d.Procesado))
-                {
-                    nextCodigo++;
-                    var activo = new Activos
-                    {
-                        IdCategoria = item.IdCategoria,
-                        IdOrden = orden.IdOrden,
-                        IdItemOC = item.IdItemOC,
-                        IdDetalleItemOC = detalle.IdDetalleItemOC,
-                        CodigoActivo = $"ACT-{nextCodigo:D4}",
-                        Serial = detalle.Serial,
-                        Marca = item.Marca,
-                        Modelo = item.Modelo,
-                        Referencia = item.Referencia,
-                        EstadoActivo = EstadoActivo.Disponible,
-                        FechaAdquisicion = now,
-                        Observaciones = detalle.Observaciones
-                    };
-
-                    _context.Activos.Add(activo);
-                    detalle.Procesado = true;
-                    detalle.IdActivo = activo.IdActivo;
-                    activosCreados.Add(activo);
-                }
-            }
-
-            if (activosCreados.Count == 0)
+            if (pendientes.Count == 0)
                 throw new InvalidOperationException("No hay seriales pendientes por procesar.");
 
-            await _context.SaveChangesAsync();
-
-            // Cargar relaciones
-            foreach (var a in activosCreados)
+            foreach (var detalle in pendientes)
             {
-                await _context.Entry(a).Reference(aa => aa.Categoria).LoadAsync();
-                await _context.Entry(a).Reference(aa => aa.OrdenCompra).LoadAsync();
+                detalle.Procesado = true;
             }
 
-            return activosCreados;
+            await _context.SaveChangesAsync();
+            return new List<Activos>();
         }
     }
 }

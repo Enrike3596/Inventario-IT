@@ -73,6 +73,7 @@ namespace Services
                 IdItemOC = d.IdItemOC,
                 Serial = d.Serial,
                 Procesado = d.Procesado,
+                Estado = d.Estado,
                 IdActivo = d.IdActivo,
                 CodigoActivo = d.Activo?.CodigoActivo,
                 Observaciones = d.Observaciones,

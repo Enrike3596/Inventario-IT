@@ -68,6 +68,7 @@ namespace Repositories
         {
             return await _context.AsignacionesUsuario
                 .Include(a => a.Usuario)
+                .Include(a => a.CanalSolicitud)
                 .Where(a => ids.Contains(a.IdAsignacion))
                 .ToListAsync();
         }
@@ -79,35 +80,47 @@ namespace Repositories
             if (activa)
                 throw new InvalidOperationException("El activo ya está asignado actualmente.");
 
-            _context.AsignacionesUsuario.Add(asignacion);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
-                                               && pg.SqlState == PostgresErrorCodes.UniqueViolation)
-            {
-                await FixAsignacionIdSequenceAsync();
-                _context.Entry(asignacion).State = EntityState.Added;
-                await _context.SaveChangesAsync();
-            }
+                _context.AsignacionesUsuario.Add(asignacion);
 
-            var activo = await _context.Activos.FindAsync(asignacion.IdActivo);
-            if (activo != null)
-            {
-                activo.EstadoActivo = EstadoActivo.Asignado;
-                _context.HistorialActivos.Add(new HistorialActivo
+                try
                 {
-                    IdActivo = asignacion.IdActivo,
-                    IdAsignacion = asignacion.IdAsignacion,
-                    TipoMovimiento = TipoMovimiento.Asignacion,
-                    FechaMovimiento = DateTime.UtcNow,
-                    IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
-                    EstadoAnterior = EstadoActivo.Disponible.ToString(),
-                    EstadoNuevo = EstadoActivo.Asignado.ToString()
-                });
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
+                                                   && pg.SqlState == PostgresErrorCodes.UniqueViolation)
+                {
+                    await FixAsignacionIdSequenceAsync();
+                    _context.Entry(asignacion).State = EntityState.Added;
+                    await _context.SaveChangesAsync();
+                }
+
+                var activo = await _context.Activos.FindAsync(asignacion.IdActivo);
+                if (activo != null)
+                {
+                    activo.EstadoActivo = EstadoActivo.Asignado;
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = asignacion.IdActivo,
+                        IdAsignacion = asignacion.IdAsignacion,
+                        TipoMovimiento = TipoMovimiento.Asignacion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                        EstadoAnterior = EstadoActivo.Disponible.ToString(),
+                        EstadoNuevo = EstadoActivo.Asignado.ToString()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
 
             await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
@@ -130,49 +143,61 @@ namespace Repositories
                 .FirstOrDefaultAsync(a => a.IdAsignacion == id);
             if (asignacion == null) return null;
 
-            var estadoAnterior = asignacion.EstadoAsignacion;
-            asignacion.EstadoAsignacion = dto.EstadoAsignacion;
-            asignacion.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await _context.SaveChangesAsync();
-
-            if (estadoAnterior == EstadoAsignacion.Activa && dto.EstadoAsignacion == EstadoAsignacion.Finalizada)
+            try
             {
-                var activo = asignacion.ActivoNav;
-                if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
+                var estadoAnterior = asignacion.EstadoAsignacion;
+                asignacion.EstadoAsignacion = dto.EstadoAsignacion;
+                asignacion.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
+                await _context.SaveChangesAsync();
+
+                if (estadoAnterior == EstadoAsignacion.Activa && dto.EstadoAsignacion == EstadoAsignacion.Finalizada)
                 {
-                    activo.EstadoActivo = EstadoActivo.Disponible;
-                    _context.HistorialActivos.Add(new HistorialActivo
+                    var activo = asignacion.ActivoNav;
+                    if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
                     {
-                        IdActivo = asignacion.IdActivo,
-                        IdAsignacion = asignacion.IdAsignacion,
-                        TipoMovimiento = TipoMovimiento.Devolucion,
-                        FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
-                        EstadoAnterior = EstadoActivo.Asignado.ToString(),
-                        EstadoNuevo = EstadoActivo.Disponible.ToString()
-                    });
-                    await _context.SaveChangesAsync();
+                        activo.EstadoActivo = EstadoActivo.Disponible;
+                        _context.HistorialActivos.Add(new HistorialActivo
+                        {
+                            IdActivo = asignacion.IdActivo,
+                            IdAsignacion = asignacion.IdAsignacion,
+                            TipoMovimiento = TipoMovimiento.Devolucion,
+                            FechaMovimiento = DateTime.UtcNow,
+                            IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
+                            EstadoAnterior = EstadoActivo.Asignado.ToString(),
+                            EstadoNuevo = EstadoActivo.Disponible.ToString()
+                        });
+                        await _context.SaveChangesAsync();
+                    }
                 }
+                else if (estadoAnterior == EstadoAsignacion.Finalizada && dto.EstadoAsignacion == EstadoAsignacion.Activa)
+                {
+                    var activo = asignacion.ActivoNav;
+                    if (activo != null && activo.EstadoActivo != EstadoActivo.Asignado)
+                    {
+                        activo.EstadoActivo = EstadoActivo.Asignado;
+                        _context.HistorialActivos.Add(new HistorialActivo
+                        {
+                            IdActivo = asignacion.IdActivo,
+                            IdAsignacion = asignacion.IdAsignacion,
+                            TipoMovimiento = TipoMovimiento.Asignacion,
+                            FechaMovimiento = DateTime.UtcNow,
+                            IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
+                            EstadoAnterior = EstadoActivo.Disponible.ToString(),
+                            EstadoNuevo = EstadoActivo.Asignado.ToString()
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                await transaction.CommitAsync();
             }
-            else if (estadoAnterior == EstadoAsignacion.Finalizada && dto.EstadoAsignacion == EstadoAsignacion.Activa)
+            catch
             {
-                var activo = asignacion.ActivoNav;
-                if (activo != null && activo.EstadoActivo != EstadoActivo.Asignado)
-                {
-                    activo.EstadoActivo = EstadoActivo.Asignado;
-                    _context.HistorialActivos.Add(new HistorialActivo
-                    {
-                        IdActivo = asignacion.IdActivo,
-                        IdAsignacion = asignacion.IdAsignacion,
-                        TipoMovimiento = TipoMovimiento.Asignacion,
-                        FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = dto.IdUsuarioRecibe ?? asignacion.IdUsuarioEntrega,
-                        EstadoAnterior = EstadoActivo.Disponible.ToString(),
-                        EstadoNuevo = EstadoActivo.Asignado.ToString()
-                    });
-                    await _context.SaveChangesAsync();
-                }
+                await transaction.RollbackAsync();
+                throw;
             }
 
             return asignacion;
@@ -213,11 +238,34 @@ namespace Repositories
 
         public async Task<bool> EliminarAsync(int id)
         {
-            var asignacion = await _context.AsignacionesUsuario.FindAsync(id);
+            var asignacion = await _context.AsignacionesUsuario
+                .Include(a => a.ActivoNav)
+                .FirstOrDefaultAsync(a => a.IdAsignacion == id);
             if (asignacion == null) return false;
 
-            _context.AsignacionesUsuario.Remove(asignacion);
-            await _context.SaveChangesAsync();
+            if (asignacion.EstadoAsignacion != EstadoAsignacion.Finalizada)
+            {
+                asignacion.EstadoAsignacion = EstadoAsignacion.Finalizada;
+                await _context.SaveChangesAsync();
+
+                var activo = asignacion.ActivoNav;
+                if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
+                {
+                    activo.EstadoActivo = EstadoActivo.Disponible;
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = asignacion.IdActivo,
+                        IdAsignacion = asignacion.IdAsignacion,
+                        TipoMovimiento = TipoMovimiento.Devolucion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                        EstadoAnterior = EstadoActivo.Asignado.ToString(),
+                        EstadoNuevo = EstadoActivo.Disponible.ToString()
+                    });
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return true;
         }
     }

@@ -28,6 +28,8 @@ namespace DTOs
 
     public class SalidaUpdateDTO
     {
+        public EstadoActivo EstadoActivo { get; set; }
+
         public string? Observaciones { get; set; }
 
         public string? MotivoEdicion { get; set; }
@@ -38,6 +40,7 @@ namespace DTOs
         public int IdSalida { get; set; }
         public string CodigoUnico { get; set; } = null!;
         public EstadoActivo EstadoActivo { get; set; }
+        public bool Estado { get; set; }
         public DateTime FechaSalida { get; set; }
         public string? Observaciones { get; set; }
         public List<DetalleSalidaResponseDTO> Activos { get; set; } = new();

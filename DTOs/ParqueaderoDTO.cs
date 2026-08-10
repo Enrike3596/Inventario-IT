@@ -5,8 +5,9 @@ namespace DTOs
 {
     public class ParqueaderoCreateDTO
     {
-        [Required(ErrorMessage = "La sede es obligatoria")]
-        public int IdSede { get; set; }
+        [Required(ErrorMessage = "El DA es obligatorio")]
+        [MaxLength(50, ErrorMessage = "El DA no puede exceder 50 caracteres")]
+        public string DA { get; set; } = null!;
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public string Nombre { get; set; } = null!;
@@ -17,8 +18,9 @@ namespace DTOs
 
     public class ParqueaderoUpdateDTO
     {
-        [Required(ErrorMessage = "La sede es obligatoria")]
-        public int IdSede { get; set; }
+        [Required(ErrorMessage = "El DA es obligatorio")]
+        [MaxLength(50, ErrorMessage = "El DA no puede exceder 50 caracteres")]
+        public string DA { get; set; } = null!;
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public string Nombre { get; set; } = null!;
@@ -34,8 +36,7 @@ namespace DTOs
     public class ParqueaderoResponseDTO
     {
         public int IdParqueadero { get; set; }
-        public int IdSede { get; set; }
-        public string? NombreSede { get; set; }
+        public string DA { get; set; } = null!;
         public string Nombre { get; set; } = null!;
         public string Ubicacion { get; set; } = null!;
         public EstadoGenerico Estado { get; set; }

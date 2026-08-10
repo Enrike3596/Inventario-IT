@@ -22,6 +22,86 @@ namespace HelpDesk.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Models.ActaFirma", b =>
+                {
+                    b.Property<int>("IdActa")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdActa"));
+
+                    b.Property<bool>("Activa")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<int?>("CreadoPor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DocumentoFirmante")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("FechaEnvio")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("FechaFirma")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("FechaGeneracion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("FechaVencimiento")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdDestino")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IpFirma")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ModificadoPor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("NombreFirmante")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RutaPdf")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TipoDestino")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("IdActa");
+
+                    b.HasIndex("CreadoPor");
+
+                    b.HasIndex("ModificadoPor");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("IdDestino", "TipoDestino");
+
+                    b.ToTable("ActasFirma");
+                });
+
             modelBuilder.Entity("Models.Activos", b =>
                 {
                     b.Property<int>("IdActivo")
@@ -83,9 +163,6 @@ namespace HelpDesk.API.Migrations
                     b.Property<string>("Observaciones")
                         .HasColumnType("text");
 
-                    b.Property<string>("Referencia")
-                        .HasColumnType("text");
-
                     b.Property<string>("Serial")
                         .IsRequired()
                         .HasColumnType("text");
@@ -111,6 +188,48 @@ namespace HelpDesk.API.Migrations
                         .IsUnique();
 
                     b.ToTable("Activos");
+                });
+
+            modelBuilder.Entity("Models.Area", b =>
+                {
+                    b.Property<int>("IdArea")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdArea"));
+
+                    b.Property<int?>("CreadoPor")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Estado")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("FechaCreacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("FechaModificacion")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ModificadoPor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("MotivoEdicion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NombreArea")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("IdArea");
+
+                    b.HasIndex("CreadoPor");
+
+                    b.HasIndex("ModificadoPor");
+
+                    b.HasIndex("NombreArea")
+                        .IsUnique();
+
+                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("Models.AsignacionUsuario", b =>
@@ -199,6 +318,11 @@ namespace HelpDesk.API.Migrations
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("timestamp without time zone");
 
@@ -284,6 +408,11 @@ namespace HelpDesk.API.Migrations
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("timestamp without time zone");
@@ -446,6 +575,11 @@ namespace HelpDesk.API.Migrations
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("timestamp without time zone");
 
@@ -474,17 +608,8 @@ namespace HelpDesk.API.Migrations
                     b.Property<string>("MotivoEdicion")
                         .HasColumnType("text");
 
-                    b.Property<string>("NombreProducto")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<string>("Observaciones")
                         .HasColumnType("text");
-
-                    b.Property<string>("Referencia")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.HasKey("IdItemOC");
 
@@ -509,6 +634,11 @@ namespace HelpDesk.API.Migrations
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<DateTime>("FechaCompra")
                         .HasColumnType("timestamp without time zone");
@@ -563,6 +693,11 @@ namespace HelpDesk.API.Migrations
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
 
+                    b.Property<string>("DA")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -573,9 +708,6 @@ namespace HelpDesk.API.Migrations
 
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("IdSede")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("ModificadoPor")
                         .HasColumnType("integer");
@@ -595,7 +727,9 @@ namespace HelpDesk.API.Migrations
 
                     b.HasIndex("CreadoPor");
 
-                    b.HasIndex("IdSede");
+                    b.HasIndex("DA")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Parqueaderos_DA");
 
                     b.HasIndex("ModificadoPor");
 
@@ -661,6 +795,11 @@ namespace HelpDesk.API.Migrations
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Estado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("EstadoActivo")
                         .IsRequired()
@@ -780,6 +919,9 @@ namespace HelpDesk.API.Migrations
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int?>("IdArea")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdRol")
                         .HasColumnType("integer");
 
@@ -807,6 +949,8 @@ namespace HelpDesk.API.Migrations
 
                     b.HasIndex("CreadoPor");
 
+                    b.HasIndex("IdArea");
+
                     b.HasIndex("IdRol");
 
                     b.HasIndex("IdSede");
@@ -814,6 +958,19 @@ namespace HelpDesk.API.Migrations
                     b.HasIndex("ModificadoPor");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("Models.ActaFirma", b =>
+                {
+                    b.HasOne("Models.Usuarios", null)
+                        .WithMany()
+                        .HasForeignKey("CreadoPor")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Models.Usuarios", null)
+                        .WithMany()
+                        .HasForeignKey("ModificadoPor")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Models.Activos", b =>
@@ -857,6 +1014,19 @@ namespace HelpDesk.API.Migrations
                     b.Navigation("ItemOC");
 
                     b.Navigation("OrdenCompra");
+                });
+
+            modelBuilder.Entity("Models.Area", b =>
+                {
+                    b.HasOne("Models.Usuarios", null)
+                        .WithMany()
+                        .HasForeignKey("CreadoPor")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Models.Usuarios", null)
+                        .WithMany()
+                        .HasForeignKey("ModificadoPor")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Models.AsignacionUsuario", b =>
@@ -1085,18 +1255,10 @@ namespace HelpDesk.API.Migrations
                         .HasForeignKey("CreadoPor")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Models.Sedes", "Sede")
-                        .WithMany("Parqueaderos")
-                        .HasForeignKey("IdSede")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Models.Usuarios", null)
                         .WithMany()
                         .HasForeignKey("ModificadoPor")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Sede");
                 });
 
             modelBuilder.Entity("Models.Roles", b =>
@@ -1145,6 +1307,11 @@ namespace HelpDesk.API.Migrations
                         .HasForeignKey("CreadoPor")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Models.Area", "Area")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("IdArea")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Models.Roles", "Rol")
                         .WithMany("Usuarios")
                         .HasForeignKey("IdRol")
@@ -1162,6 +1329,8 @@ namespace HelpDesk.API.Migrations
                         .HasForeignKey("ModificadoPor")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.Navigation("Area");
+
                     b.Navigation("Rol");
 
                     b.Navigation("Sede");
@@ -1174,6 +1343,11 @@ namespace HelpDesk.API.Migrations
                     b.Navigation("DetallesSalida");
 
                     b.Navigation("HistorialActivos");
+                });
+
+            modelBuilder.Entity("Models.Area", b =>
+                {
+                    b.Navigation("Usuarios");
                 });
 
             modelBuilder.Entity("Models.Canal", b =>
@@ -1219,8 +1393,6 @@ namespace HelpDesk.API.Migrations
 
             modelBuilder.Entity("Models.Sedes", b =>
                 {
-                    b.Navigation("Parqueaderos");
-
                     b.Navigation("Usuarios");
                 });
 

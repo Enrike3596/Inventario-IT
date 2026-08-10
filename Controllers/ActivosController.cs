@@ -92,6 +92,26 @@ namespace Controllers
             }
         }
 
+        [HttpPost("{id}/regreso-reparacion")]
+        public async Task<IActionResult> RegistrarRegresoReparacion(int id, [FromBody] RegresoReparacionDTO dto)
+        {
+            try
+            {
+                var data = await _service.RegistrarRegresoReparacionAsync(id, dto);
+                if (data == null)
+                    return NotFound(ResponseHelper.NotFound());
+                return Ok(ResponseHelper.Success(data, "Activo regresado a disponible exitosamente."));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ResponseHelper.BadRequest(ex.Message));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseHelper.Error(ex.Message));
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

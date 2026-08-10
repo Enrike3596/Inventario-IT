@@ -10,16 +10,11 @@ namespace DTOs
         [Required(ErrorMessage = "La categoría es obligatoria")]
         public int IdCategoria { get; set; }
 
-        [Required(ErrorMessage = "El nombre del producto es obligatorio")]
-        public string NombreProducto { get; set; } = null!;
-
         [Required(ErrorMessage = "La marca es obligatoria")]
         public string Marca { get; set; } = null!;
 
         [Required(ErrorMessage = "El modelo es obligatorio")]
         public string Modelo { get; set; } = null!;
-
-        public string? Referencia { get; set; }
 
         public string? Observaciones { get; set; }
 
@@ -32,16 +27,11 @@ namespace DTOs
         [Required(ErrorMessage = "La categoría es obligatoria")]
         public int IdCategoria { get; set; }
 
-        [Required(ErrorMessage = "El nombre del producto es obligatorio")]
-        public string NombreProducto { get; set; } = null!;
-
         [Required(ErrorMessage = "La marca es obligatoria")]
         public string Marca { get; set; } = null!;
 
         [Required(ErrorMessage = "El modelo es obligatorio")]
         public string Modelo { get; set; } = null!;
-
-        public string? Referencia { get; set; }
 
         public string? Observaciones { get; set; }
 
@@ -57,13 +47,12 @@ namespace DTOs
         public int IdOrden { get; set; }
         public int IdCategoria { get; set; }
         public string? NombreCategoria { get; set; }
-        public string NombreProducto { get; set; } = null!;
         public string Marca { get; set; } = null!;
         public string Modelo { get; set; } = null!;
-        public string? Referencia { get; set; }
         public string? Observaciones { get; set; }
         public int CantidadEsperada { get; set; }
         public int CantidadIngresada { get; set; }
+        public bool Estado { get; set; }
         public List<DetalleItemOCResponseDTO> DetallesItem { get; set; } = new();
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }

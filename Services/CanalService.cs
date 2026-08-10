@@ -62,6 +62,7 @@ namespace Services
             {
                 IdCanal = c.IdCanal,
                 Nombre = c.Nombre,
+                Estado = c.Estado,
                 FechaSolicitud = c.FechaSolicitud,
                 FechaCreacion = c.FechaCreacion,
                 FechaModificacion = c.FechaModificacion,

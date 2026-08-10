@@ -31,6 +31,8 @@ namespace Data
         public DbSet<DetalleSalida> DetallesSalida { get; set; }
         public DbSet<AsignacionUsuario> AsignacionesUsuario { get; set; }
         public DbSet<HistorialActivo> HistorialActivos { get; set; }
+        public DbSet<ActaFirma> ActasFirma { get; set; }
+        public DbSet<Area> Areas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,7 @@ namespace Data
             var estadoUsuarioConverter = new EnumToStringConverter<EstadoUsuario>();
             var tipoMovimientoConverter = new EnumToStringConverter<TipoMovimiento>();
             var estadoGenericoConverter = new EnumToStringConverter<EstadoGenerico>();
+            var estadoActaConverter = new EnumToStringConverter<EstadoActa>();
 
             modelBuilder.Entity<Activos>(entity =>
             {
@@ -80,6 +83,46 @@ namespace Data
             modelBuilder.Entity<Sedes>(entity =>
             {
                 entity.Property(e => e.Estado).HasConversion(estadoGenericoConverter).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<Area>(entity =>
+            {
+                entity.HasIndex(a => a.NombreArea).IsUnique();
+            });
+
+            // Soft-delete: Estado por defecto activo
+            modelBuilder.Entity<Canal>(entity =>
+            {
+                entity.Property(e => e.Estado).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<OrdenCompra>(entity =>
+            {
+                entity.Property(e => e.Estado).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<ItemOC>(entity =>
+            {
+                entity.Property(e => e.Estado).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<DetalleItemOC>(entity =>
+            {
+                entity.Property(e => e.Estado).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<Salida>(entity =>
+            {
+                entity.Property(e => e.Estado).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<ActaFirma>(entity =>
+            {
+                entity.Property(e => e.Estado).HasConversion(estadoActaConverter).HasMaxLength(20);
+                entity.Property(e => e.Activa).HasDefaultValue(true);
+                entity.HasIndex(e => e.Token).IsUnique();
+                entity.HasIndex(e => new { e.IdDestino, e.TipoDestino });
+                entity.Property(e => e.TipoDestino).HasMaxLength(20).IsRequired();
             });
 
             // Configuración Activos - Código único
@@ -192,6 +235,8 @@ namespace Data
                 .HasForeignKey(au => au.IdUsuarioEntrega)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // ActaFirma ahora referencia grupo (Usuario/Parqueadero) en lugar de AsignacionUsuario
+
             // Relaciones HistorialActivo -> Activo
             modelBuilder.Entity<HistorialActivo>()
                 .HasOne(h => h.Activo)
@@ -262,12 +307,11 @@ namespace Data
                 .HasForeignKey(a => a.IdDetalleItemOC)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones Parqueadero -> Sede
+            // Relaciones Parqueadero - DA único
             modelBuilder.Entity<Parqueadero>()
-                .HasOne(p => p.Sede)
-                .WithMany(s => s.Parqueaderos)
-                .HasForeignKey(p => p.IdSede)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasIndex(p => p.DA)
+                .IsUnique()
+                .HasDatabaseName("IX_Parqueaderos_DA");
 
             // Relaciones Usuario -> Rol
             modelBuilder.Entity<Usuarios>()
@@ -283,8 +327,16 @@ namespace Data
                 .HasForeignKey(u => u.IdSede)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Relaciones Usuario -> Area (opcional)
+            modelBuilder.Entity<Usuarios>()
+                .HasOne(u => u.Area)
+                .WithMany(a => a.Usuarios)
+                .HasForeignKey(u => u.IdArea)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Relaciones de auditoría - CreadoPor / ModificadoPor
             ConfigureAuditRelationships<Activos>(modelBuilder);
+            ConfigureAuditRelationships<ActaFirma>(modelBuilder);
             ConfigureAuditRelationships<AsignacionUsuario>(modelBuilder);
             ConfigureAuditRelationships<Canal>(modelBuilder);
             ConfigureAuditRelationships<CategoriaActivo>(modelBuilder);
@@ -298,6 +350,7 @@ namespace Data
             ConfigureAuditRelationships<Salida>(modelBuilder);
             ConfigureAuditRelationships<Sedes>(modelBuilder);
             ConfigureAuditRelationships<Usuarios>(modelBuilder);
+            ConfigureAuditRelationships<Area>(modelBuilder);
         }
 
         private static void ConfigureAuditRelationships<T>(ModelBuilder modelBuilder) where T : class

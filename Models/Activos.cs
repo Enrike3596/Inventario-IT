@@ -25,7 +25,6 @@ namespace Models
         public string Serial { get; set; } = null!;
         public string Marca { get; set; } = null!;
         public string Modelo { get; set; } = null!;
-        public string? Referencia { get; set; }
         public EstadoActivo EstadoActivo { get; set; } = EstadoActivo.Disponible;
         public DateTime FechaAdquisicion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaBaja { get; set; }

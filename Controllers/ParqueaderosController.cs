@@ -46,6 +46,22 @@ namespace Controllers
             }
         }
 
+        [HttpGet("da/{da}")]
+        public async Task<IActionResult> ObtenerPorDA(string da)
+        {
+            try
+            {
+                var data = await _service.ObtenerPorDAAsync(da);
+                if (data == null)
+                    return NotFound(ResponseHelper.NotFound());
+                return Ok(ResponseHelper.Success(data));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseHelper.Error(ex.Message));
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ParqueaderoCreateDTO dto)
         {

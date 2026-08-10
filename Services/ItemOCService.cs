@@ -40,10 +40,8 @@ namespace Services
             {
                 IdOrden = dto.IdOrden,
                 IdCategoria = dto.IdCategoria,
-                NombreProducto = dto.NombreProducto,
                 Marca = dto.Marca,
                 Modelo = dto.Modelo,
-                Referencia = dto.Referencia,
                 Observaciones = dto.Observaciones,
                 CantidadEsperada = dto.CantidadEsperada
             };
@@ -72,13 +70,12 @@ namespace Services
                 IdOrden = i.IdOrden,
                 IdCategoria = i.IdCategoria,
                 NombreCategoria = i.Categoria?.Nombre,
-                NombreProducto = i.NombreProducto,
                 Marca = i.Marca,
                 Modelo = i.Modelo,
-                Referencia = i.Referencia,
                 Observaciones = i.Observaciones,
                 CantidadEsperada = i.CantidadEsperada,
                 CantidadIngresada = ingresados,
+                Estado = i.Estado,
                 FechaCreacion = i.FechaCreacion,
                 FechaModificacion = i.FechaModificacion,
                 CreadoPor = i.CreadoPor,
@@ -89,6 +86,7 @@ namespace Services
                     IdItemOC = d.IdItemOC,
                     Serial = d.Serial,
                     Procesado = d.Procesado,
+                    Estado = d.Estado,
                     IdActivo = d.IdActivo,
                     CodigoActivo = d.Activo?.CodigoActivo,
                     Observaciones = d.Observaciones,

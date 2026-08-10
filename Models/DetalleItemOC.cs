@@ -16,6 +16,8 @@ namespace Models
 
         public bool Procesado { get; set; } = false;
 
+        public bool Estado { get; set; } = true;
+
         [ForeignKey("Activo")]
         public int? IdActivo { get; set; }
 

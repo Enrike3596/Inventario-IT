@@ -9,8 +9,9 @@ namespace Models
         [Key]
         public int IdParqueadero { get; set; }
 
-        [ForeignKey("Sede")]
-        public int IdSede { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string DA { get; set; } = null!;
         public string Nombre { get; set; } = null!;
         public string Ubicacion { get; set; } = null!;
         public EstadoGenerico Estado { get; set; } = EstadoGenerico.Activo;
@@ -20,7 +21,6 @@ namespace Models
         public int? CreadoPor { get; set; }
         public int? ModificadoPor { get; set; }
 
-        public virtual Sedes Sede { get; set; } = null!;
         public virtual ICollection<AsignacionUsuario> AsignacionesUsuario { get; set; } = new List<AsignacionUsuario>();
     }
 }

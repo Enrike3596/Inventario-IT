@@ -7,6 +7,7 @@ namespace Models
         [Key]
         public int IdCanal { get; set; }
         public string Nombre { get; set; } = null!;
+        public bool Estado { get; set; } = true;
         public DateTime FechaSolicitud { get; set; } = DateTime.UtcNow;
         public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;

@@ -11,6 +11,7 @@ namespace Repositories
     {
         Task<List<Parqueadero>> ObtenerTodosAsync();
         Task<Parqueadero?> ObtenerPorIdAsync(int id);
+        Task<Parqueadero?> ObtenerPorDAAsync(string da);
         Task<Parqueadero> CrearAsync(Parqueadero parqueadero);
         Task<Parqueadero?> ActualizarAsync(int id, ParqueaderoUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
@@ -28,7 +29,6 @@ namespace Repositories
         public async Task<List<Parqueadero>> ObtenerTodosAsync()
         {
             return await _context.Parqueaderos
-                .Include(p => p.Sede)
                 .Where(p => p.Estado == EstadoGenerico.Activo)
                 .ToListAsync();
         }
@@ -36,8 +36,13 @@ namespace Repositories
         public async Task<Parqueadero?> ObtenerPorIdAsync(int id)
         {
             return await _context.Parqueaderos
-                .Include(p => p.Sede)
                 .FirstOrDefaultAsync(p => p.IdParqueadero == id);
+        }
+
+        public async Task<Parqueadero?> ObtenerPorDAAsync(string da)
+        {
+            return await _context.Parqueaderos
+                .FirstOrDefaultAsync(p => p.DA == da);
         }
 
         public async Task<Parqueadero> CrearAsync(Parqueadero parqueadero)
@@ -50,21 +55,27 @@ namespace Repositories
             if (string.IsNullOrWhiteSpace(parqueadero.Ubicacion))
                 throw new ArgumentException("Ubicación no puede ser vacía.", nameof(parqueadero));
 
+            parqueadero.DA = (parqueadero.DA ?? string.Empty).Trim().ToUpper();
+            if (string.IsNullOrWhiteSpace(parqueadero.DA))
+                throw new ArgumentException("DA no puede ser vacío.", nameof(parqueadero));
+
+            var existing = await _context.Parqueaderos.FirstOrDefaultAsync(p => p.DA == parqueadero.DA);
+            if (existing != null)
+                throw new InvalidOperationException($"Ya existe un parqueadero con el DA '{parqueadero.DA}'.");
+
             _context.Parqueaderos.Add(parqueadero);
 
             try
             {
                 await _context.SaveChangesAsync();
-                await _context.Entry(parqueadero).Reference(p => p.Sede).LoadAsync();
                 return parqueadero;
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
-                                               && pg.SqlState == PostgresErrorCodes.UniqueViolation)
+                                                   && pg.SqlState == PostgresErrorCodes.UniqueViolation)
             {
                 await FixParqueaderoIdSequenceAsync();
                 _context.Entry(parqueadero).State = EntityState.Added;
                 await _context.SaveChangesAsync();
-                await _context.Entry(parqueadero).Reference(p => p.Sede).LoadAsync();
                 return parqueadero;
             }
         }
@@ -80,8 +91,17 @@ namespace Repositories
             var parqueadero = await _context.Parqueaderos.FindAsync(id);
             if (parqueadero == null) return null;
 
-            if (dto.IdSede != parqueadero.IdSede)
-                parqueadero.IdSede = dto.IdSede;
+            var da = (dto.DA ?? string.Empty).Trim().ToUpper();
+            if (string.IsNullOrWhiteSpace(da))
+                throw new ArgumentException("DA no puede ser vacío.", nameof(dto.DA));
+
+            if (da != parqueadero.DA)
+            {
+                var existing = await _context.Parqueaderos.FirstOrDefaultAsync(p => p.DA == da);
+                if (existing != null)
+                    throw new InvalidOperationException($"Ya existe un parqueadero con el DA '{da}'.");
+                parqueadero.DA = da;
+            }
 
             var nombre = (dto.Nombre ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(nombre))
@@ -98,7 +118,6 @@ namespace Repositories
             parqueadero.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
 
             await _context.SaveChangesAsync();
-            await _context.Entry(parqueadero).Reference(p => p.Sede).LoadAsync();
             return parqueadero;
         }
 

@@ -11,6 +11,8 @@ namespace DTOs
         [Required(ErrorMessage = "La sede es obligatoria")]
         public int IdSede { get; set; }
 
+        public int? IdArea { get; set; }
+
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public string Nombre { get; set; } = null!;
 
@@ -23,9 +25,8 @@ namespace DTOs
         [Required(ErrorMessage = "El cargo es obligatorio")]
         public string Cargo { get; set; } = null!;
 
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
         [MinLength(6, ErrorMessage = "Mínimo 6 caracteres")]
-        public string Contraseña { get; set; } = null!;
+        public string? Contraseña { get; set; }
     }
 
     public class UsuarioUpdateDTO
@@ -35,6 +36,8 @@ namespace DTOs
 
         [Required(ErrorMessage = "La sede es obligatoria")]
         public int IdSede { get; set; }
+
+        public int? IdArea { get; set; }
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
         public string Nombre { get; set; } = null!;
@@ -60,6 +63,8 @@ namespace DTOs
         public string? NombreRol { get; set; }
         public int IdSede { get; set; }
         public string? NombreSede { get; set; }
+        public int? IdArea { get; set; }
+        public string? NombreArea { get; set; }
         public string Nombre { get; set; } = null!;
         public string Correo { get; set; } = null!;
         public string Telefono { get; set; } = null!;

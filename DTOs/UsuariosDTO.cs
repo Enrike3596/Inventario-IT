@@ -8,9 +8,6 @@ namespace DTOs
         [Required(ErrorMessage = "El rol es obligatorio")]
         public int IdRol { get; set; }
 
-        [Required(ErrorMessage = "La sede es obligatoria")]
-        public int IdSede { get; set; }
-
         public int? IdArea { get; set; }
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
@@ -33,9 +30,6 @@ namespace DTOs
     {
         [Required(ErrorMessage = "El rol es obligatorio")]
         public int IdRol { get; set; }
-
-        [Required(ErrorMessage = "La sede es obligatoria")]
-        public int IdSede { get; set; }
 
         public int? IdArea { get; set; }
 
@@ -61,8 +55,6 @@ namespace DTOs
         public int IdUsuario { get; set; }
         public int IdRol { get; set; }
         public string? NombreRol { get; set; }
-        public int IdSede { get; set; }
-        public string? NombreSede { get; set; }
         public int? IdArea { get; set; }
         public string? NombreArea { get; set; }
         public string Nombre { get; set; } = null!;

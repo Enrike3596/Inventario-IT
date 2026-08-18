@@ -20,7 +20,6 @@ namespace Services
             ["fechaCompra"]       = new("Fecha compra",     a => a.Remision.FechaCompra.ToString("yyyy-MM-dd")),
             ["responsable"]       = new("Responsable",      a => ResponsableActivo(a)),
             ["area"]              = new("Área",             a => AreaResponsable(a)),
-            ["sede"]              = new("Sede",             a => SedeResponsable(a)),
             ["observaciones"]     = new("Observaciones",    a => a.Observaciones ?? "-")
         };
 
@@ -38,11 +37,6 @@ namespace Services
             => a.AsignacionesUsuario
                 .FirstOrDefault(au => au.EstadoAsignacion == EstadoAsignacion.Activa)
                 ?.Usuario?.Area?.NombreArea ?? "-";
-
-        private static string SedeResponsable(Activos a)
-            => a.AsignacionesUsuario
-                .FirstOrDefault(au => au.EstadoAsignacion == EstadoAsignacion.Activa)
-                ?.Usuario?.Sede?.Nombre ?? "-";
 
         public static EstadoActivo EstadoEfectivoActivo(Activos a)
             => a.EstadoActivo == EstadoActivo.Disponible &&

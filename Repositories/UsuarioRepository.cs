@@ -31,7 +31,6 @@ namespace Repositories
         {
             return await _context.Usuarios
                 .Include(u => u.Rol)
-                .Include(u => u.Sede)
                 .Include(u => u.Area)
                 .Where(u => u.EstadoUsuario == EstadoUsuario.Activo)
                 .ToListAsync();
@@ -41,7 +40,6 @@ namespace Repositories
         {
             return await _context.Usuarios
                 .Include(u => u.Rol)
-                .Include(u => u.Sede)
                 .Include(u => u.Area)
                 .FirstOrDefaultAsync(u => u.IdUsuario == id);
         }
@@ -51,7 +49,6 @@ namespace Repositories
             var normalizedCorreo = (correo ?? string.Empty).Trim().ToLowerInvariant();
             return await _context.Usuarios
                 .Include(u => u.Rol)
-                .Include(u => u.Sede)
                 .Include(u => u.Area)
                 .FirstOrDefaultAsync(u => u.Correo.ToLower() == normalizedCorreo);
         }
@@ -78,7 +75,6 @@ namespace Repositories
             {
                 await _context.SaveChangesAsync();
                 await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
-                await _context.Entry(usuario).Reference(u => u.Sede).LoadAsync();
                 if (usuario.IdArea.HasValue)
                     await _context.Entry(usuario).Reference(u => u.Area).LoadAsync();
                 return usuario;
@@ -90,7 +86,6 @@ namespace Repositories
                 _context.Entry(usuario).State = EntityState.Added;
                 await _context.SaveChangesAsync();
                 await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
-                await _context.Entry(usuario).Reference(u => u.Sede).LoadAsync();
                 if (usuario.IdArea.HasValue)
                     await _context.Entry(usuario).Reference(u => u.Area).LoadAsync();
                 return usuario;
@@ -127,9 +122,6 @@ namespace Repositories
             if (dto.IdRol != usuario.IdRol)
                 usuario.IdRol = dto.IdRol;
 
-            if (dto.IdSede != usuario.IdSede)
-                usuario.IdSede = dto.IdSede;
-
             usuario.IdArea = dto.IdArea;
 
             usuario.EstadoUsuario = dto.EstadoUsuario;
@@ -138,7 +130,6 @@ namespace Repositories
 
             await _context.SaveChangesAsync();
             await _context.Entry(usuario).Reference(u => u.Rol).LoadAsync();
-            await _context.Entry(usuario).Reference(u => u.Sede).LoadAsync();
             if (usuario.IdArea.HasValue)
                 await _context.Entry(usuario).Reference(u => u.Area).LoadAsync();
             return usuario;

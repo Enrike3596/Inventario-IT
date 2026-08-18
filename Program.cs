@@ -65,7 +65,6 @@ builder.Services.AddControllers()
     });
 
 builder.Services.AddScoped<IRolRepository, RolRepository>();
-builder.Services.AddScoped<ISedeRepository, SedeRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ICategoriaActivoRepository, CategoriaActivoRepository>();
 builder.Services.AddScoped<IRemisionRepository, RemisionRepository>();
@@ -93,7 +92,6 @@ builder.Services.AddScoped<IRemisionService, RemisionService>();
 builder.Services.AddScoped<IParqueaderoService, ParqueaderoService>();
 builder.Services.AddScoped<IRolService, RolService>();
 builder.Services.AddScoped<ISalidaService, SalidaService>();
-builder.Services.AddScoped<ISedeService, SedeService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.Configure<FirmaElectronicaSettings>(builder.Configuration.GetSection("FirmaElectronica"));

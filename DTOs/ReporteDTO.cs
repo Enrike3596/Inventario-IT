@@ -23,8 +23,6 @@ namespace DTOs
 
         public List<string>? Estado { get; set; }
 
-        public List<string>? Sede { get; set; }
-
         public List<string>? Area { get; set; }
 
         public List<int>? ResponsableId { get; set; }

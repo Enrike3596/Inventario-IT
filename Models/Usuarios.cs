@@ -12,9 +12,6 @@ namespace Models
         [ForeignKey("Rol")]
         public int IdRol { get; set; }
 
-        [ForeignKey("Sede")]
-        public int IdSede { get; set; }
-
         [ForeignKey("Area")]
         public int? IdArea { get; set; }
         public string Nombre { get; set; } = null!;
@@ -30,7 +27,6 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual Roles Rol { get; set; } = null!;
-        public virtual Sedes Sede { get; set; } = null!;
         public virtual Area? Area { get; set; }
         public virtual ICollection<AsignacionUsuario> Asignaciones { get; set; } = new List<AsignacionUsuario>();
         public virtual ICollection<AsignacionUsuario> AsignacionesEntrega { get; set; } = new List<AsignacionUsuario>();

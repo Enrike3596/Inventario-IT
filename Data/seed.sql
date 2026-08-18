@@ -23,19 +23,7 @@ INSERT INTO "Roles" ("IdRol", "Nombre", "Tipo", "Estado", "FechaCreacion", "Fech
 SELECT setval(pg_get_serial_sequence('"Roles"', 'IdRol'), 5);
 
 -- ============================================================
--- 2. SEDES
--- ============================================================
-INSERT INTO "Sedes" ("IdSede", "Nombre", "Direccion", "Ciudad", "Estado", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
-(1, 'Sede Principal',     'Cra 50 #12-34',          'Bogotá',      'Activo', '2025-01-01 00:00:00', NULL, NULL, NULL),
-(2, 'Sede Norte',         'Av. 68 #45-67',          'Bogotá',      'Activo', '2025-01-01 00:00:00', NULL, NULL, NULL),
-(3, 'Sede Medellín',      'Calle 30 #20-10',        'Medellín',    'Activo', '2025-01-01 00:00:00', NULL, NULL, NULL),
-(4, 'Sede Cali',          'Av. 3N #5-20',           'Cali',        'Activo', '2025-01-01 00:00:00', NULL, NULL, NULL),
-(5, 'Sede Barranquilla',  'Cra 55 #80-90',          'Barranquilla','Activo', '2025-01-01 00:00:00', NULL, NULL, NULL);
-
-SELECT setval(pg_get_serial_sequence('"Sedes"', 'IdSede'), 5);
-
--- ============================================================
--- 2.1. AREAS
+-- 2. AREAS
 -- ============================================================
 INSERT INTO "Areas" ("IdArea", "NombreArea", "Estado", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
 (1, 'Tecnología',          true, '2025-01-01 00:00:00', NULL, NULL, NULL),
@@ -57,17 +45,17 @@ DO $$
 DECLARE
     pwd_hash TEXT := 'hQqszOD3lK2CO0RfY+inSg==.g/m0E2xkIJxdHq5X0axUWnGb+soD9SlIQmpo4ZahSGE=';
 BEGIN
-INSERT INTO "Usuarios" ("IdUsuario", "IdRol", "IdSede", "IdArea", "Nombre", "Correo", "Telefono", "Cargo", "Contraseña", "EstadoUsuario", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
-(1,  1, 1, 1, 'Carlos Andrés Martínez',    'carlos.martinez@empresa.com',    '3001234567', 'Administrador de TI',        pwd_hash, 'Activo',  '2025-01-15 08:00:00', NULL, NULL, NULL),
-(2,  2, 1, 1, 'María Fernanda López',       'maria.lopez@empresa.com',        '3001234568', 'Técnico de Soporte N1',      pwd_hash, 'Activo',  '2025-01-20 08:00:00', NULL, NULL, NULL),
-(3,  2, 2, 1, 'Juan David Rodríguez',       'juan.rodriguez@empresa.com',     '3001234569', 'Técnico de Soporte N2',      pwd_hash, 'Activo',  '2025-02-01 08:00:00', NULL, NULL, NULL),
-(4,  3, 1, 2, 'Ana María Gómez',           'ana.gomez@empresa.com',          '3001234570', 'Coordinadora Administrativa', pwd_hash, 'Activo',  '2025-02-10 08:00:00', NULL, NULL, NULL),
-(5,  3, 1, 4, 'Pedro José Hernández',      'pedro.hernandez@empresa.com',    '3001234571', 'Analista Financiero',         pwd_hash, 'Activo',  '2025-03-01 08:00:00', NULL, NULL, NULL),
-(6,  3, 2, 5, 'Laura Patricia Díaz',       'laura.diaz@empresa.com',         '3001234572', 'Gerente de Ventas',           pwd_hash, 'Activo',  '2025-03-05 08:00:00', NULL, NULL, NULL),
-(7,  3, 3, 1, 'Diego Alejandro Ramírez',   'diego.ramirez@empresa.com',      '3001234573', 'Desarrollador Senior',        pwd_hash, 'Activo',  '2025-03-10 08:00:00', NULL, NULL, NULL),
-(8,  4, 1, 8, 'Sofía Elena Castillo',      'sofia.castillo@empresa.com',     '3001234574', 'Auditor Interno',             pwd_hash, 'Activo',  '2025-04-01 08:00:00', NULL, NULL, NULL),
-(9,  3, 4, 6, 'Andrés Felipe Moreno',      'andres.moreno@empresa.com',      '3001234575', 'Jefe de Operaciones',         pwd_hash, 'Activo',  '2025-04-15 08:00:00', NULL, NULL, NULL),
-(10, 3, 5, 3, 'Carolina Isabel Torres',    'carolina.torres@empresa.com',    '3001234576', 'Coordinadora de RH',          pwd_hash, 'Activo',  '2025-05-01 08:00:00', NULL, NULL, NULL);
+INSERT INTO "Usuarios" ("IdUsuario", "IdRol", "IdArea", "Nombre", "Correo", "Telefono", "Cargo", "Contraseña", "EstadoUsuario", "FechaCreacion", "FechaModificacion", "CreadoPor", "ModificadoPor") VALUES
+(1,  1, 1, 'Carlos Andrés Martínez',    'carlos.martinez@empresa.com',    '3001234567', 'Administrador de TI',        pwd_hash, 'Activo',  '2025-01-15 08:00:00', NULL, NULL, NULL),
+(2,  2, 1, 'María Fernanda López',       'maria.lopez@empresa.com',        '3001234568', 'Técnico de Soporte N1',      pwd_hash, 'Activo',  '2025-01-20 08:00:00', NULL, NULL, NULL),
+(3,  2, 1, 'Juan David Rodríguez',       'juan.rodriguez@empresa.com',     '3001234569', 'Técnico de Soporte N2',      pwd_hash, 'Activo',  '2025-02-01 08:00:00', NULL, NULL, NULL),
+(4,  3, 2, 'Ana María Gómez',           'ana.gomez@empresa.com',          '3001234570', 'Coordinadora Administrativa', pwd_hash, 'Activo',  '2025-02-10 08:00:00', NULL, NULL, NULL),
+(5,  3, 4, 'Pedro José Hernández',      'pedro.hernandez@empresa.com',    '3001234571', 'Analista Financiero',         pwd_hash, 'Activo',  '2025-03-01 08:00:00', NULL, NULL, NULL),
+(6,  3, 5, 'Laura Patricia Díaz',       'laura.diaz@empresa.com',         '3001234572', 'Gerente de Ventas',           pwd_hash, 'Activo',  '2025-03-05 08:00:00', NULL, NULL, NULL),
+(7,  3, 1, 'Diego Alejandro Ramírez',   'diego.ramirez@empresa.com',      '3001234573', 'Desarrollador Senior',        pwd_hash, 'Activo',  '2025-03-10 08:00:00', NULL, NULL, NULL),
+(8,  4, 8, 'Sofía Elena Castillo',      'sofia.castillo@empresa.com',     '3001234574', 'Auditor Interno',             pwd_hash, 'Activo',  '2025-04-01 08:00:00', NULL, NULL, NULL),
+(9,  3, 6, 'Andrés Felipe Moreno',      'andres.moreno@empresa.com',      '3001234575', 'Jefe de Operaciones',         pwd_hash, 'Activo',  '2025-04-15 08:00:00', NULL, NULL, NULL),
+(10, 3, 3, 'Carolina Isabel Torres',    'carolina.torres@empresa.com',    '3001234576', 'Coordinadora de RH',          pwd_hash, 'Activo',  '2025-05-01 08:00:00', NULL, NULL, NULL);
 END $$;
 
 SELECT setval(pg_get_serial_sequence('"Usuarios"', 'IdUsuario'), 10);
@@ -336,8 +324,6 @@ SELECT setval(pg_get_serial_sequence('"HistorialActivos"', 'IdHistorial'), 8);
 -- VERIFICACIÓN DE DATOS INSERTADOS
 -- ============================================================
 SELECT 'Roles' AS "Tabla", COUNT(*) AS "Registros" FROM "Roles"
-UNION ALL
-SELECT 'Sedes', COUNT(*) FROM "Sedes"
 UNION ALL
 SELECT 'Areas', COUNT(*) FROM "Areas"
 UNION ALL

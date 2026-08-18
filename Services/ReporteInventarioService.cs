@@ -19,9 +19,6 @@ namespace Services
                 .Include(a => a.Remision)
                 .Include(a => a.AsignacionesUsuario)
                     .ThenInclude(au => au.Usuario)
-                        .ThenInclude(u => u.Sede)
-                .Include(a => a.AsignacionesUsuario)
-                    .ThenInclude(au => au.Usuario)
                         .ThenInclude(u => u.Area)
                 .AsQueryable();
 
@@ -54,12 +51,6 @@ namespace Services
                         (a.EstadoActivo != EstadoActivo.Disponible && estados.Contains(a.EstadoActivo)));
                 }
             }
-
-            if (filtros.Sede?.Any() == true)
-                query = query.Where(a => a.AsignacionesUsuario.Any(au =>
-                    au.EstadoAsignacion == EstadoAsignacion.Activa &&
-                    au.Usuario.Sede != null &&
-                    filtros.Sede.Contains(au.Usuario.Sede.Nombre)));
 
             if (filtros.Area?.Any() == true)
                 query = query.Where(a => a.AsignacionesUsuario.Any(au =>

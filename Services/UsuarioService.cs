@@ -62,7 +62,6 @@ namespace Services
             var usuario = new Usuarios
             {
                 IdRol = dto.IdRol,
-                IdSede = dto.IdSede,
                 IdArea = dto.IdArea,
                 Nombre = dto.Nombre,
                 Correo = dto.Correo,
@@ -216,8 +215,6 @@ namespace Services
                 IdUsuario = u.IdUsuario,
                 IdRol = u.IdRol,
                 NombreRol = u.Rol?.Nombre,
-                IdSede = u.IdSede,
-                NombreSede = u.Sede?.Nombre,
                 IdArea = u.IdArea,
                 NombreArea = u.Area?.NombreArea,
                 Nombre = u.Nombre,

@@ -18,7 +18,6 @@ namespace Data
         }
 
         public DbSet<Roles> Roles { get; set; }
-        public DbSet<Sedes> Sedes { get; set; }
         public DbSet<Usuarios> Usuarios { get; set; }
         public DbSet<Remision> Remisiones { get; set; }
         public DbSet<CategoriaActivo> CategoriasActivo { get; set; }
@@ -76,11 +75,6 @@ namespace Data
             });
 
             modelBuilder.Entity<Roles>(entity =>
-            {
-                entity.Property(e => e.Estado).HasConversion(estadoGenericoConverter).HasMaxLength(20);
-            });
-
-            modelBuilder.Entity<Sedes>(entity =>
             {
                 entity.Property(e => e.Estado).HasConversion(estadoGenericoConverter).HasMaxLength(20);
             });
@@ -320,13 +314,6 @@ namespace Data
                 .HasForeignKey(u => u.IdRol)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones Usuario -> Sede
-            modelBuilder.Entity<Usuarios>()
-                .HasOne(u => u.Sede)
-                .WithMany(s => s.Usuarios)
-                .HasForeignKey(u => u.IdSede)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Relaciones Usuario -> Area (opcional)
             modelBuilder.Entity<Usuarios>()
                 .HasOne(u => u.Area)
@@ -348,7 +335,6 @@ namespace Data
             ConfigureAuditRelationships<Parqueadero>(modelBuilder);
             ConfigureAuditRelationships<Roles>(modelBuilder);
             ConfigureAuditRelationships<Salida>(modelBuilder);
-            ConfigureAuditRelationships<Sedes>(modelBuilder);
             ConfigureAuditRelationships<Usuarios>(modelBuilder);
             ConfigureAuditRelationships<Area>(modelBuilder);
         }

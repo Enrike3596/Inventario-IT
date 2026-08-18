@@ -10,6 +10,8 @@ namespace Models
         public string Proveedor { get; set; } = null!;
         public DateTime FechaCompra { get; set; } = DateTime.UtcNow;
         public bool Estado { get; set; } = true;
+        public string? RutaDocumento { get; set; }
+        public string? NombreDocumento { get; set; }
         public string? MotivoEdicion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }

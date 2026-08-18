@@ -1,6 +1,7 @@
 using DTOs;
 using Models;
 using Repositories;
+using Services.FileStorage;
 
 namespace Services
 {
@@ -18,10 +19,12 @@ namespace Services
     public class RemisionService : IRemisionService
     {
         private readonly IRemisionRepository _repo;
+        private readonly IFileStorageService _fileStorage;
 
-        public RemisionService(IRemisionRepository repo)
+        public RemisionService(IRemisionRepository repo, IFileStorageService fileStorage)
         {
             _repo = repo;
+            _fileStorage = fileStorage;
         }
 
         public async Task<List<RemisionResponseDTO>> ObtenerTodosAsync()
@@ -44,10 +47,14 @@ namespace Services
 
         public async Task<RemisionResponseDTO> CrearAsync(RemisionCreateDTO dto)
         {
+            ValidarDocumento(dto.RutaDocumento, dto.NombreDocumento);
+
             var remision = new Remision
             {
                 NumeroRemision = dto.NumeroRemision,
-                Proveedor = dto.Proveedor
+                Proveedor = dto.Proveedor,
+                RutaDocumento = dto.RutaDocumento,
+                NombreDocumento = dto.NombreDocumento
             };
 
             var creada = await _repo.CrearAsync(remision);
@@ -56,13 +63,39 @@ namespace Services
 
         public async Task<RemisionResponseDTO?> ActualizarAsync(int id, RemisionUpdateDTO dto)
         {
+            ValidarDocumento(dto.RutaDocumento, dto.NombreDocumento);
+
             var actualizada = await _repo.ActualizarAsync(id, dto);
             return actualizada == null ? null : MapToDTO(actualizada);
         }
 
         public async Task<bool> EliminarAsync(int id)
         {
-            return await _repo.EliminarAsync(id);
+            var remision = await _repo.ObtenerPorIdAsync(id);
+            var rutaDocumento = remision?.RutaDocumento;
+
+            var eliminada = await _repo.EliminarAsync(id);
+            if (eliminada && !string.IsNullOrWhiteSpace(rutaDocumento))
+            {
+                var (contenedor, nombreArchivo) = DescomponerRuta(rutaDocumento);
+                await _fileStorage.DeleteAsync(contenedor, nombreArchivo);
+            }
+            return eliminada;
+        }
+
+        private static void ValidarDocumento(string? ruta, string? nombre)
+        {
+            if (string.IsNullOrWhiteSpace(ruta) || string.IsNullOrWhiteSpace(nombre))
+                throw new InvalidOperationException("El documento PDF de la remisión es obligatorio.");
+        }
+
+        private static (string Contenedor, string NombreArchivo) DescomponerRuta(string ruta)
+        {
+            var limpia = ruta.Replace('\\', '/');
+            var idx = limpia.IndexOf('/');
+            if (idx <= 0 || idx == limpia.Length - 1)
+                return ("", limpia);
+            return (limpia[..idx], limpia[(idx + 1)..]);
         }
 
         public async Task<List<ActivoResponseDTO>> ConfirmarIngresoAsync(int idRemision)
@@ -101,6 +134,8 @@ namespace Services
                 Proveedor = r.Proveedor,
                 FechaCompra = r.FechaCompra,
                 Estado = r.Estado,
+                RutaDocumento = r.RutaDocumento,
+                NombreDocumento = r.NombreDocumento,
                 FechaCreacion = r.FechaCreacion,
                 FechaModificacion = r.FechaModificacion,
                 CreadoPor = r.CreadoPor,
@@ -148,6 +183,8 @@ namespace Services
                 Proveedor = r.Proveedor,
                 FechaCompra = r.FechaCompra,
                 Estado = r.Estado,
+                RutaDocumento = r.RutaDocumento,
+                NombreDocumento = r.NombreDocumento,
                 FechaCreacion = r.FechaCreacion,
                 FechaModificacion = r.FechaModificacion,
                 CreadoPor = r.CreadoPor,

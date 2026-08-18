@@ -7,6 +7,8 @@ namespace Services.FileStorage
     {
         public string BasePath { get; set; } = "uploads";
         public string BaseUrl { get; set; } = "/uploads";
+        public long DocumentoRemisionMaxBytes { get; set; } = 10 * 1024 * 1024;
+        public string[] DocumentoRemisionExtensiones { get; set; } = { ".pdf" };
     }
 
     public class FileStorageService : IFileStorageService

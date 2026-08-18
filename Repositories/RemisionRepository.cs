@@ -14,6 +14,7 @@ namespace Repositories
         Task<Remision?> ObtenerConItemsAsync(int id);
         Task<Remision> CrearAsync(Remision remision);
         Task<Remision?> ActualizarAsync(int id, RemisionUpdateDTO dto);
+        Task<Remision?> ActualizarDocumentoAsync(int id, string? rutaDocumento, string? nombreDocumento);
         Task<bool> EliminarAsync(int id);
         Task<List<Activos>> ConfirmarIngresoAsync(int idRemision);
     }
@@ -102,7 +103,22 @@ namespace Repositories
                 throw new ArgumentException("Proveedor no puede ser vacío.", nameof(dto.Proveedor));
             remision.Proveedor = proveedor;
 
+            remision.RutaDocumento = dto.RutaDocumento;
+            remision.NombreDocumento = dto.NombreDocumento;
+
             remision.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
+
+            await _context.SaveChangesAsync();
+            return remision;
+        }
+
+        public async Task<Remision?> ActualizarDocumentoAsync(int id, string? rutaDocumento, string? nombreDocumento)
+        {
+            var remision = await _context.Remisiones.FindAsync(id);
+            if (remision == null) return null;
+
+            remision.RutaDocumento = rutaDocumento;
+            remision.NombreDocumento = nombreDocumento;
 
             await _context.SaveChangesAsync();
             return remision;

@@ -12,6 +12,7 @@ namespace Services
         Task<List<AsignacionUsuarioResponseDTO>> ObtenerPorActivoAsync(int idActivo);
         Task<AsignacionUsuarioResponseDTO> CrearAsync(AsignacionUsuarioCreateDTO dto);
         Task<AsignacionUsuarioResponseDTO?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
+        Task<AsignacionUsuarioResponseDTO?> DevolverAsync(int id, DevolucionAsignacionDTO dto);
         Task<AsignacionUsuarioResponseDTO?> DesactivarAsync(int id);
         Task<bool> EliminarAsync(int id);
     }
@@ -68,6 +69,12 @@ namespace Services
             return actualizada == null ? null : MapToDTO(actualizada);
         }
 
+        public async Task<AsignacionUsuarioResponseDTO?> DevolverAsync(int id, DevolucionAsignacionDTO dto)
+        {
+            var devuelta = await _repo.DevolverAsync(id, dto);
+            return devuelta == null ? null : MapToDTO(devuelta);
+        }
+
         public async Task<AsignacionUsuarioResponseDTO?> DesactivarAsync(int id)
         {
             var desactivada = await _repo.DesactivarAsync(id);
@@ -99,6 +106,10 @@ namespace Services
                 NumeroTicket = a.NumeroTicket,
                 FechaAsignacion = a.FechaAsignacion,
                 EstadoAsignacion = a.EstadoAsignacion,
+                MotivoEdicion = a.MotivoEdicion,
+                FormaEntregaDevolucion = a.FormaEntregaDevolucion,
+                EstadoDevolucion = a.EstadoDevolucion,
+                ObservacionDevolucion = a.ObservacionDevolucion,
                 FechaCreacion = a.FechaCreacion,
                 FechaModificacion = a.FechaModificacion,
                 CreadoPor = a.CreadoPor,

@@ -31,6 +31,9 @@ namespace Models
         public EstadoAsignacion EstadoAsignacion { get; set; } = EstadoAsignacion.Activa;
 
         public string? MotivoEdicion { get; set; }
+        public string? FormaEntregaDevolucion { get; set; }
+        public string? EstadoDevolucion { get; set; }
+        public string? ObservacionDevolucion { get; set; }
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

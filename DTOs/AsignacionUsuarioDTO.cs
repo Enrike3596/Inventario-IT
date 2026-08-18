@@ -34,6 +34,20 @@ namespace DTOs
         public int? IdUsuarioRecibe { get; set; }
     }
 
+    public class DevolucionAsignacionDTO
+    {
+        [Required(ErrorMessage = "Debes indicar el motivo de la devolución")]
+        public string MotivoEdicion { get; set; } = null!;
+
+        [Required(ErrorMessage = "Debes indicar la forma de entrega de la devolución")]
+        public string FormaEntregaDevolucion { get; set; } = null!;
+
+        [Required(ErrorMessage = "Debes indicar el estado del activo devuelto")]
+        public string EstadoDevolucion { get; set; } = null!;
+
+        public string? ObservacionDevolucion { get; set; }
+    }
+
     public class AsignacionUsuarioResponseDTO
     {
         public int IdAsignacion { get; set; }
@@ -52,6 +66,10 @@ namespace DTOs
         public string? NumeroTicket { get; set; }
         public DateTime FechaAsignacion { get; set; }
         public EstadoAsignacion EstadoAsignacion { get; set; }
+        public string? MotivoEdicion { get; set; }
+        public string? FormaEntregaDevolucion { get; set; }
+        public string? EstadoDevolucion { get; set; }
+        public string? ObservacionDevolucion { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

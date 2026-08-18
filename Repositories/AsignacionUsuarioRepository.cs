@@ -15,6 +15,7 @@ namespace Repositories
         Task<List<AsignacionUsuario>> ObtenerPorIdsAsync(List<int> ids);
         Task<AsignacionUsuario> CrearAsync(AsignacionUsuario asignacion);
         Task<AsignacionUsuario?> ActualizarAsync(int id, AsignacionUsuarioUpdateDTO dto);
+        Task<AsignacionUsuario?> DevolverAsync(int id, DevolucionAsignacionDTO dto);
         Task<AsignacionUsuario?> DesactivarAsync(int id);
         Task<bool> EliminarAsync(int id);
     }
@@ -190,6 +191,71 @@ namespace Repositories
                         });
                         await _context.SaveChangesAsync();
                     }
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+
+            return asignacion;
+        }
+
+        public async Task<AsignacionUsuario?> DevolverAsync(int id, DevolucionAsignacionDTO dto)
+        {
+            var asignacion = await _context.AsignacionesUsuario
+                .Include(a => a.ActivoNav)
+                .FirstOrDefaultAsync(a => a.IdAsignacion == id);
+            if (asignacion == null) return null;
+
+            var forma = (dto.FormaEntregaDevolucion ?? string.Empty).Trim();
+            var estado = (dto.EstadoDevolucion ?? string.Empty).Trim();
+            var motivo = (dto.MotivoEdicion ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(forma))
+                throw new ArgumentException("Debes indicar la forma de entrega de la devolución.", nameof(dto));
+            if (string.IsNullOrWhiteSpace(estado))
+                throw new ArgumentException("Debes indicar el estado del activo devuelto.", nameof(dto));
+            if (string.IsNullOrWhiteSpace(motivo))
+                throw new ArgumentException("Debes indicar el motivo de la devolución.", nameof(dto));
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                asignacion.EstadoAsignacion = EstadoAsignacion.Finalizada;
+                asignacion.MotivoEdicion = motivo;
+                asignacion.FormaEntregaDevolucion = forma;
+                asignacion.EstadoDevolucion = estado;
+                asignacion.ObservacionDevolucion = (dto.ObservacionDevolucion ?? string.Empty).Trim();
+                asignacion.FechaModificacion = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                var activo = asignacion.ActivoNav;
+                if (activo != null && activo.EstadoActivo == EstadoActivo.Asignado)
+                {
+                    activo.EstadoActivo = EstadoActivo.Disponible;
+
+                    var resumen = $"Motivo: {motivo} — Forma de entrega: {forma} — Estado: {estado}";
+                    if (!string.IsNullOrWhiteSpace(asignacion.ObservacionDevolucion))
+                        resumen += $" — Observación: {asignacion.ObservacionDevolucion}";
+
+                    _context.HistorialActivos.Add(new HistorialActivo
+                    {
+                        IdActivo = asignacion.IdActivo,
+                        IdAsignacion = asignacion.IdAsignacion,
+                        TipoMovimiento = TipoMovimiento.Devolucion,
+                        FechaMovimiento = DateTime.UtcNow,
+                        IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                        EstadoAnterior = EstadoActivo.Asignado.ToString(),
+                        EstadoNuevo = EstadoActivo.Disponible.ToString(),
+                        Observaciones = resumen
+                    });
+                    await _context.SaveChangesAsync();
                 }
 
                 await transaction.CommitAsync();

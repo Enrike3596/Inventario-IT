@@ -90,6 +90,22 @@ namespace Controllers
             }
         }
 
+        [HttpPost("{id}/devolver")]
+        public async Task<IActionResult> Devolver(int id, [FromBody] DevolucionAsignacionDTO dto)
+        {
+            try
+            {
+                var data = await _service.DevolverAsync(id, dto);
+                if (data == null)
+                    return NotFound(ResponseHelper.NotFound());
+                return Ok(ResponseHelper.Success(data, "Devolución registrada exitosamente."));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ResponseHelper.BadRequest(ex.Message));
+            }
+        }
+
         [HttpPatch("{id}/desactivar")]
         public async Task<IActionResult> Desactivar(int id)
         {

@@ -16,7 +16,7 @@ namespace Services
         {
             var query = _db.Activos
                 .Include(a => a.Categoria)
-                .Include(a => a.OrdenCompra)
+                .Include(a => a.Remision)
                 .Include(a => a.AsignacionesUsuario)
                     .ThenInclude(au => au.Usuario)
                         .ThenInclude(u => u.Sede)
@@ -79,10 +79,10 @@ namespace Services
                 query = query.Where(a => a.FechaAdquisicion <= filtros.FechaAdquisicionHasta.Value);
 
             if (!string.IsNullOrWhiteSpace(filtros.Proveedor))
-                query = query.Where(a => a.OrdenCompra.Proveedor.Contains(filtros.Proveedor));
+                query = query.Where(a => a.Remision.Proveedor.Contains(filtros.Proveedor));
 
-            if (!string.IsNullOrWhiteSpace(filtros.NumeroOC))
-                query = query.Where(a => a.OrdenCompra.NumeroOC.Contains(filtros.NumeroOC));
+            if (!string.IsNullOrWhiteSpace(filtros.NumeroRemision))
+                query = query.Where(a => a.Remision.NumeroRemision.Contains(filtros.NumeroRemision));
 
             return query;
         }

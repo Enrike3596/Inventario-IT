@@ -35,7 +35,7 @@ namespace DTOs
 
         public string? Proveedor { get; set; }
 
-        public string? NumeroOC { get; set; }
+        public string? NumeroRemision { get; set; }
     }
 
     public class ReportePreviewResponse

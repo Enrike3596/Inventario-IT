@@ -5,72 +5,72 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
-    public interface IDetalleItemOCRepository
+    public interface IDetalleItemRemisionRepository
     {
-        Task<List<DetalleItemOC>> ObtenerPorItemAsync(int idItemOC);
-        Task<DetalleItemOC?> ObtenerPorIdAsync(int id);
-        Task<DetalleItemOC> CrearAsync(DetalleItemOC detalle);
-        Task<List<DetalleItemOC>> CrearBatchAsync(int idItemOC, List<string> seriales);
-        Task<DetalleItemOC?> ActualizarAsync(int id, DetalleItemOCUpdateDTO dto);
+        Task<List<DetalleItemRemision>> ObtenerPorItemAsync(int idItemRemision);
+        Task<DetalleItemRemision?> ObtenerPorIdAsync(int id);
+        Task<DetalleItemRemision> CrearAsync(DetalleItemRemision detalle);
+        Task<List<DetalleItemRemision>> CrearBatchAsync(int idItemRemision, List<string> seriales);
+        Task<DetalleItemRemision?> ActualizarAsync(int id, DetalleItemRemisionUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
     }
 
-    public class DetalleItemOCRepository : IDetalleItemOCRepository
+    public class DetalleItemRemisionRepository : IDetalleItemRemisionRepository
     {
         private readonly AppDbContext _context;
 
-        public DetalleItemOCRepository(AppDbContext context)
+        public DetalleItemRemisionRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<DetalleItemOC>> ObtenerPorItemAsync(int idItemOC)
+        public async Task<List<DetalleItemRemision>> ObtenerPorItemAsync(int idItemRemision)
         {
-            return await _context.DetallesItemOC
-                .Include(d => d.ItemOC)
+            return await _context.DetallesItemRemision
+                .Include(d => d.ItemRemision)
                 .Include(d => d.Activo)
-                .Where(d => d.IdItemOC == idItemOC && d.Estado)
-                .OrderBy(d => d.IdDetalleItemOC)
+                .Where(d => d.IdItemRemision == idItemRemision && d.Estado)
+                .OrderBy(d => d.IdDetalleItemRemision)
                 .ToListAsync();
         }
 
-        public async Task<DetalleItemOC?> ObtenerPorIdAsync(int id)
+        public async Task<DetalleItemRemision?> ObtenerPorIdAsync(int id)
         {
-            return await _context.DetallesItemOC
-                .Include(d => d.ItemOC)
+            return await _context.DetallesItemRemision
+                .Include(d => d.ItemRemision)
                 .Include(d => d.Activo)
-                .FirstOrDefaultAsync(d => d.IdDetalleItemOC == id && d.Estado);
+                .FirstOrDefaultAsync(d => d.IdDetalleItemRemision == id && d.Estado);
         }
 
-        public async Task<DetalleItemOC> CrearAsync(DetalleItemOC detalle)
+        public async Task<DetalleItemRemision> CrearAsync(DetalleItemRemision detalle)
         {
             var serial = (detalle.Serial ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(serial))
                 throw new ArgumentException("Serial no puede ser vacío.", nameof(detalle));
 
-            if (await _context.DetallesItemOC.AnyAsync(d => d.Estado && d.Serial.ToLower() == serial.ToLower()))
-                throw new InvalidOperationException($"El serial '{serial}' ya fue registrado en esta orden.");
+            if (await _context.DetallesItemRemision.AnyAsync(d => d.Estado && d.Serial.ToLower() == serial.ToLower()))
+                throw new InvalidOperationException($"El serial '{serial}' ya fue registrado en esta remisión.");
 
             detalle.Serial = serial;
             detalle.Observaciones = (detalle.Observaciones ?? string.Empty).Trim();
 
-            _context.DetallesItemOC.Add(detalle);
+            _context.DetallesItemRemision.Add(detalle);
             await _context.SaveChangesAsync();
             return detalle;
         }
 
-        public async Task<List<DetalleItemOC>> CrearBatchAsync(int idItemOC, List<string> seriales)
+        public async Task<List<DetalleItemRemision>> CrearBatchAsync(int idItemRemision, List<string> seriales)
         {
-            var item = await _context.ItemsOC.FindAsync(idItemOC);
+            var item = await _context.ItemsRemision.FindAsync(idItemRemision);
             if (item == null)
-                throw new ArgumentException("El item de OC no existe.");
+                throw new ArgumentException("El ítem de remisión no existe.");
 
-            var existentes = await _context.DetallesItemOC
-                .Where(d => d.IdItemOC == idItemOC && d.Estado)
+            var existentes = await _context.DetallesItemRemision
+                .Where(d => d.IdItemRemision == idItemRemision && d.Estado)
                 .Select(d => d.Serial.ToLower())
                 .ToListAsync();
 
-            var nuevos = new List<DetalleItemOC>();
+            var nuevos = new List<DetalleItemRemision>();
             foreach (var s in seriales)
             {
                 var serial = (s ?? string.Empty).Trim();
@@ -79,12 +79,12 @@ namespace Repositories
                 if (existentes.Contains(serial.ToLower()))
                     throw new InvalidOperationException($"El serial '{serial}' ya fue registrado.");
 
-                var detalle = new DetalleItemOC
+                var detalle = new DetalleItemRemision
                 {
-                    IdItemOC = idItemOC,
+                    IdItemRemision = idItemRemision,
                     Serial = serial
                 };
-                _context.DetallesItemOC.Add(detalle);
+                _context.DetallesItemRemision.Add(detalle);
                 nuevos.Add(detalle);
                 existentes.Add(serial.ToLower());
             }
@@ -93,9 +93,9 @@ namespace Repositories
             return nuevos;
         }
 
-        public async Task<DetalleItemOC?> ActualizarAsync(int id, DetalleItemOCUpdateDTO dto)
+        public async Task<DetalleItemRemision?> ActualizarAsync(int id, DetalleItemRemisionUpdateDTO dto)
         {
-            var detalle = await _context.DetallesItemOC.FindAsync(id);
+            var detalle = await _context.DetallesItemRemision.FindAsync(id);
             if (detalle == null) return null;
 
             if (detalle.Procesado)
@@ -114,7 +114,7 @@ namespace Repositories
 
         public async Task<bool> EliminarAsync(int id)
         {
-            var detalle = await _context.DetallesItemOC.FindAsync(id);
+            var detalle = await _context.DetallesItemRemision.FindAsync(id);
             if (detalle == null) return false;
 
             if (detalle.Procesado)

@@ -5,43 +5,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
-    public interface IItemOCRepository
+    public interface IItemRemisionRepository
     {
-        Task<List<ItemOC>> ObtenerPorOrdenAsync(int idOrden);
-        Task<ItemOC?> ObtenerPorIdAsync(int id);
-        Task<ItemOC> CrearAsync(ItemOC item);
-        Task<ItemOC?> ActualizarAsync(int id, ItemOCUpdateDTO dto);
+        Task<List<ItemRemision>> ObtenerPorRemisionAsync(int idRemision);
+        Task<ItemRemision?> ObtenerPorIdAsync(int id);
+        Task<ItemRemision> CrearAsync(ItemRemision item);
+        Task<ItemRemision?> ActualizarAsync(int id, ItemRemisionUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
     }
 
-    public class ItemOCRepository : IItemOCRepository
+    public class ItemRemisionRepository : IItemRemisionRepository
     {
         private readonly AppDbContext _context;
 
-        public ItemOCRepository(AppDbContext context)
+        public ItemRemisionRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<List<ItemOC>> ObtenerPorOrdenAsync(int idOrden)
+        public async Task<List<ItemRemision>> ObtenerPorRemisionAsync(int idRemision)
         {
-            return await _context.ItemsOC
+            return await _context.ItemsRemision
                 .Include(i => i.Categoria)
                 .Include(i => i.DetallesItem)
-                .Where(i => i.IdOrden == idOrden && i.Estado)
-                .OrderBy(i => i.IdItemOC)
+                .Where(i => i.IdRemision == idRemision && i.Estado)
+                .OrderBy(i => i.IdItemRemision)
                 .ToListAsync();
         }
 
-        public async Task<ItemOC?> ObtenerPorIdAsync(int id)
+        public async Task<ItemRemision?> ObtenerPorIdAsync(int id)
         {
-            return await _context.ItemsOC
+            return await _context.ItemsRemision
                 .Include(i => i.Categoria)
                 .Include(i => i.DetallesItem)
-                .FirstOrDefaultAsync(i => i.IdItemOC == id && i.Estado);
+                .FirstOrDefaultAsync(i => i.IdItemRemision == id && i.Estado);
         }
 
-        public async Task<ItemOC> CrearAsync(ItemOC item)
+        public async Task<ItemRemision> CrearAsync(ItemRemision item)
         {
             item.Marca = (item.Marca ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(item.Marca))
@@ -51,14 +51,14 @@ namespace Repositories
             if (string.IsNullOrWhiteSpace(item.Modelo))
                 throw new ArgumentException("Modelo no puede ser vacío.", nameof(item));
 
-            _context.ItemsOC.Add(item);
+            _context.ItemsRemision.Add(item);
             await _context.SaveChangesAsync();
             return item;
         }
 
-        public async Task<ItemOC?> ActualizarAsync(int id, ItemOCUpdateDTO dto)
+        public async Task<ItemRemision?> ActualizarAsync(int id, ItemRemisionUpdateDTO dto)
         {
-            var item = await _context.ItemsOC.FindAsync(id);
+            var item = await _context.ItemsRemision.FindAsync(id);
             if (item == null) return null;
 
             item.IdCategoria = dto.IdCategoria;
@@ -73,7 +73,6 @@ namespace Repositories
                 throw new ArgumentException("Modelo no puede ser vacío.", nameof(dto.Modelo));
             item.Modelo = modelo;
 
-            item.Observaciones = (dto.Observaciones ?? string.Empty).Trim();
             item.CantidadEsperada = dto.CantidadEsperada;
 
             item.MotivoEdicion = (dto.MotivoEdicion ?? string.Empty).Trim();
@@ -84,13 +83,13 @@ namespace Repositories
 
         public async Task<bool> EliminarAsync(int id)
         {
-            var item = await _context.ItemsOC
+            var item = await _context.ItemsRemision
                 .Include(i => i.DetallesItem)
-                .FirstOrDefaultAsync(i => i.IdItemOC == id);
+                .FirstOrDefaultAsync(i => i.IdItemRemision == id);
             if (item == null) return false;
 
             if (item.DetallesItem.Any(d => d.Procesado))
-                throw new InvalidOperationException("No se puede eliminar un item con seriales ya procesados.");
+                throw new InvalidOperationException("No se puede eliminar un ítem con seriales ya procesados.");
 
             foreach (var detalle in item.DetallesItem)
                 detalle.Estado = false;

@@ -20,11 +20,11 @@ namespace Data
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Sedes> Sedes { get; set; }
         public DbSet<Usuarios> Usuarios { get; set; }
-        public DbSet<OrdenCompra> OrdenesCompra { get; set; }
+        public DbSet<Remision> Remisiones { get; set; }
         public DbSet<CategoriaActivo> CategoriasActivo { get; set; }
         public DbSet<Activos> Activos { get; set; }
-        public DbSet<ItemOC> ItemsOC { get; set; }
-        public DbSet<DetalleItemOC> DetallesItemOC { get; set; }
+        public DbSet<ItemRemision> ItemsRemision { get; set; }
+        public DbSet<DetalleItemRemision> DetallesItemRemision { get; set; }
         public DbSet<Parqueadero> Parqueaderos { get; set; }
         public DbSet<Salida> Salidas { get; set; }
         public DbSet<Canal> Canales { get; set; }
@@ -96,17 +96,17 @@ namespace Data
                 entity.Property(e => e.Estado).HasDefaultValue(true);
             });
 
-            modelBuilder.Entity<OrdenCompra>(entity =>
+            modelBuilder.Entity<Remision>(entity =>
             {
                 entity.Property(e => e.Estado).HasDefaultValue(true);
             });
 
-            modelBuilder.Entity<ItemOC>(entity =>
+            modelBuilder.Entity<ItemRemision>(entity =>
             {
                 entity.Property(e => e.Estado).HasDefaultValue(true);
             });
 
-            modelBuilder.Entity<DetalleItemOC>(entity =>
+            modelBuilder.Entity<DetalleItemRemision>(entity =>
             {
                 entity.Property(e => e.Estado).HasDefaultValue(true);
             });
@@ -166,10 +166,10 @@ namespace Data
                 entity.HasIndex(u => u.Correo).IsUnique();
             });
 
-            // Configuración OrdenCompra - NumeroOC único
-            modelBuilder.Entity<OrdenCompra>(entity =>
+            // Configuración Remision - NumeroRemision único
+            modelBuilder.Entity<Remision>(entity =>
             {
-                entity.HasIndex(o => o.NumeroOC).IsUnique();
+                entity.HasIndex(r => r.NumeroRemision).IsUnique();
             });
 
             // Relaciones DetalleSalida -> Salida
@@ -193,11 +193,11 @@ namespace Data
                 .HasForeignKey(a => a.IdCategoria)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones Activos -> OrdenCompra
+            // Relaciones Activos -> Remision
             modelBuilder.Entity<Activos>()
-                .HasOne(a => a.OrdenCompra)
+                .HasOne(a => a.Remision)
                 .WithMany()
-                .HasForeignKey(a => a.IdOrden)
+                .HasForeignKey(a => a.IdRemision)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones AsignacionUsuario -> Activo
@@ -265,46 +265,46 @@ namespace Data
                 .HasForeignKey(h => h.IdAsignacion)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Relaciones ItemOC -> OrdenCompra
-            modelBuilder.Entity<ItemOC>()
-                .HasOne(i => i.OrdenCompra)
-                .WithMany(o => o.ItemsOC)
-                .HasForeignKey(i => i.IdOrden)
+            // Relaciones ItemRemision -> Remision
+            modelBuilder.Entity<ItemRemision>()
+                .HasOne(i => i.Remision)
+                .WithMany(r => r.ItemsRemision)
+                .HasForeignKey(i => i.IdRemision)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones ItemOC -> Categoria
-            modelBuilder.Entity<ItemOC>()
+            // Relaciones ItemRemision -> Categoria
+            modelBuilder.Entity<ItemRemision>()
                 .HasOne(i => i.Categoria)
-                .WithMany(c => c.ItemsOC)
+                .WithMany(c => c.ItemsRemision)
                 .HasForeignKey(i => i.IdCategoria)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones DetalleItemOC -> ItemOC
-            modelBuilder.Entity<DetalleItemOC>()
-                .HasOne(d => d.ItemOC)
+            // Relaciones DetalleItemRemision -> ItemRemision
+            modelBuilder.Entity<DetalleItemRemision>()
+                .HasOne(d => d.ItemRemision)
                 .WithMany(i => i.DetallesItem)
-                .HasForeignKey(d => d.IdItemOC)
+                .HasForeignKey(d => d.IdItemRemision)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Relaciones DetalleItemOC -> Activo (opcional)
-            modelBuilder.Entity<DetalleItemOC>()
+            // Relaciones DetalleItemRemision -> Activo (opcional)
+            modelBuilder.Entity<DetalleItemRemision>()
                 .HasOne(d => d.Activo)
                 .WithMany()
                 .HasForeignKey(d => d.IdActivo)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Relaciones Activos -> ItemOC
+            // Relaciones Activos -> ItemRemision
             modelBuilder.Entity<Activos>()
-                .HasOne(a => a.ItemOC)
+                .HasOne(a => a.ItemRemision)
                 .WithMany(i => i.Activos)
-                .HasForeignKey(a => a.IdItemOC)
+                .HasForeignKey(a => a.IdItemRemision)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relaciones Activos -> DetalleItemOC
+            // Relaciones Activos -> DetalleItemRemision
             modelBuilder.Entity<Activos>()
-                .HasOne(a => a.DetalleItemOC)
+                .HasOne(a => a.DetalleItemRemision)
                 .WithMany()
-                .HasForeignKey(a => a.IdDetalleItemOC)
+                .HasForeignKey(a => a.IdDetalleItemRemision)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones Parqueadero - DA único
@@ -340,11 +340,11 @@ namespace Data
             ConfigureAuditRelationships<AsignacionUsuario>(modelBuilder);
             ConfigureAuditRelationships<Canal>(modelBuilder);
             ConfigureAuditRelationships<CategoriaActivo>(modelBuilder);
-            ConfigureAuditRelationships<DetalleItemOC>(modelBuilder);
+            ConfigureAuditRelationships<DetalleItemRemision>(modelBuilder);
             ConfigureAuditRelationships<DetalleSalida>(modelBuilder);
             ConfigureAuditRelationships<HistorialActivo>(modelBuilder);
-            ConfigureAuditRelationships<ItemOC>(modelBuilder);
-            ConfigureAuditRelationships<OrdenCompra>(modelBuilder);
+            ConfigureAuditRelationships<ItemRemision>(modelBuilder);
+            ConfigureAuditRelationships<Remision>(modelBuilder);
             ConfigureAuditRelationships<Parqueadero>(modelBuilder);
             ConfigureAuditRelationships<Roles>(modelBuilder);
             ConfigureAuditRelationships<Salida>(modelBuilder);

@@ -12,14 +12,14 @@ namespace Models
         [ForeignKey("Categoria")]
         public int IdCategoria { get; set; }
 
-        [ForeignKey("OrdenCompra")]
-        public int IdOrden { get; set; }
+        [ForeignKey("Remision")]
+        public int IdRemision { get; set; }
 
-        [ForeignKey("ItemOC")]
-        public int? IdItemOC { get; set; }
+        [ForeignKey("ItemRemision")]
+        public int? IdItemRemision { get; set; }
 
-        [ForeignKey("DetalleItemOC")]
-        public int? IdDetalleItemOC { get; set; }
+        [ForeignKey("DetalleItemRemision")]
+        public int? IdDetalleItemRemision { get; set; }
 
         public string CodigoActivo { get; set; } = null!;
         public string Serial { get; set; } = null!;
@@ -37,9 +37,9 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual CategoriaActivo Categoria { get; set; } = null!;
-        public virtual OrdenCompra OrdenCompra { get; set; } = null!;
-        public virtual ItemOC? ItemOC { get; set; }
-        public virtual DetalleItemOC? DetalleItemOC { get; set; }
+        public virtual Remision Remision { get; set; } = null!;
+        public virtual ItemRemision? ItemRemision { get; set; }
+        public virtual DetalleItemRemision? DetalleItemRemision { get; set; }
         public virtual ICollection<AsignacionUsuario> AsignacionesUsuario { get; set; } = new List<AsignacionUsuario>();
         public virtual ICollection<HistorialActivo> HistorialActivos { get; set; } = new List<HistorialActivo>();
         public virtual ICollection<DetalleSalida> DetallesSalida { get; set; } = new List<DetalleSalida>();

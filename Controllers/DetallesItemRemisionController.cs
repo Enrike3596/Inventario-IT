@@ -7,21 +7,21 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DetallesItemOCController : ControllerBase
+    public class DetallesItemRemisionController : ControllerBase
     {
-        private readonly IDetalleItemOCService _service;
+        private readonly IDetalleItemRemisionService _service;
 
-        public DetallesItemOCController(IDetalleItemOCService service)
+        public DetallesItemRemisionController(IDetalleItemRemisionService service)
         {
             _service = service;
         }
 
-        [HttpGet("item/{idItemOC}")]
-        public async Task<IActionResult> ObtenerPorItem(int idItemOC)
+        [HttpGet("item/{idItemRemision}")]
+        public async Task<IActionResult> ObtenerPorItem(int idItemRemision)
         {
             try
             {
-                var data = await _service.ObtenerPorItemAsync(idItemOC);
+                var data = await _service.ObtenerPorItemAsync(idItemRemision);
                 return Ok(ResponseHelper.Success(data));
             }
             catch (Exception ex)
@@ -47,12 +47,12 @@ namespace Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] DetalleItemOCCreateDTO dto)
+        public async Task<IActionResult> Crear([FromBody] DetalleItemRemisionCreateDTO dto)
         {
             try
             {
                 var data = await _service.CrearAsync(dto);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = data.IdDetalleItemOC }, ResponseHelper.Created(data));
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = data.IdDetalleItemRemision }, ResponseHelper.Created(data));
             }
             catch (Exception ex)
             {
@@ -61,11 +61,11 @@ namespace Controllers
         }
 
         [HttpPost("batch")]
-        public async Task<IActionResult> CrearBatch([FromBody] DetalleItemOCBatchCreateDTO dto)
+        public async Task<IActionResult> CrearBatch([FromBody] DetalleItemRemisionBatchCreateDTO dto)
         {
             try
             {
-                var data = await _service.CrearBatchAsync(dto.IdItemOC, dto.Seriales);
+                var data = await _service.CrearBatchAsync(dto.IdItemRemision, dto.Seriales);
                 return Ok(ResponseHelper.Success(data));
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] DetalleItemOCUpdateDTO dto)
+        public async Task<IActionResult> Actualizar(int id, [FromBody] DetalleItemRemisionUpdateDTO dto)
         {
             try
             {

@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
-    public class ItemOC
+    public class ItemRemision
     {
         [Key]
-        public int IdItemOC { get; set; }
+        public int IdItemRemision { get; set; }
 
-        [ForeignKey("OrdenCompra")]
-        public int IdOrden { get; set; }
+        [ForeignKey("Remision")]
+        public int IdRemision { get; set; }
 
         [ForeignKey("Categoria")]
         public int IdCategoria { get; set; }
@@ -19,8 +19,6 @@ namespace Models
 
         [Required, MaxLength(100)]
         public string Modelo { get; set; } = null!;
-
-        public string? Observaciones { get; set; }
 
         public int CantidadEsperada { get; set; }
 
@@ -33,10 +31,10 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         // Navegación
-        public virtual OrdenCompra OrdenCompra { get; set; } = null!;
+        public virtual Remision Remision { get; set; } = null!;
         public virtual CategoriaActivo Categoria { get; set; } = null!;
 
-        public virtual ICollection<DetalleItemOC> DetallesItem { get; set; } = new List<DetalleItemOC>();
+        public virtual ICollection<DetalleItemRemision> DetallesItem { get; set; } = new List<DetalleItemRemision>();
         public virtual ICollection<Activos> Activos { get; set; } = new List<Activos>();
     }
 }

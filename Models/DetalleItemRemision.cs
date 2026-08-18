@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
 {
-    public class DetalleItemOC
+    public class DetalleItemRemision
     {
         [Key]
-        public int IdDetalleItemOC { get; set; }
+        public int IdDetalleItemRemision { get; set; }
 
-        [ForeignKey("ItemOC")]
-        public int IdItemOC { get; set; }
+        [ForeignKey("ItemRemision")]
+        public int IdItemRemision { get; set; }
 
         [Required, MaxLength(100)]
         public string Serial { get; set; } = null!;
@@ -29,7 +29,7 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         // Navegación
-        public virtual ItemOC ItemOC { get; set; } = null!;
+        public virtual ItemRemision ItemRemision { get; set; } = null!;
         public virtual Activos? Activo { get; set; }
     }
 }

@@ -31,9 +31,9 @@ namespace Repositories
         {
             return await _context.Activos
                 .Include(a => a.Categoria)
-                .Include(a => a.OrdenCompra)
-                .Include(a => a.ItemOC)
-                .Include(a => a.DetalleItemOC)
+                .Include(a => a.Remision)
+                .Include(a => a.ItemRemision)
+                .Include(a => a.DetalleItemRemision)
                 .OrderByDescending(a => a.FechaAdquisicion)
                 .ToListAsync();
         }
@@ -42,9 +42,9 @@ namespace Repositories
         {
             return await _context.Activos
                 .Include(a => a.Categoria)
-                .Include(a => a.OrdenCompra)
-                .Include(a => a.ItemOC)
-                .Include(a => a.DetalleItemOC)
+                .Include(a => a.Remision)
+                .Include(a => a.ItemRemision)
+                .Include(a => a.DetalleItemRemision)
                 .FirstOrDefaultAsync(a => a.IdActivo == id);
         }
 
@@ -53,7 +53,7 @@ namespace Repositories
             var normalized = (serial ?? string.Empty).Trim().ToLowerInvariant();
             return await _context.Activos
                 .Include(a => a.Categoria)
-                .Include(a => a.OrdenCompra)
+                .Include(a => a.Remision)
                 .FirstOrDefaultAsync(a => a.Serial.ToLower() == normalized);
         }
 
@@ -71,10 +71,10 @@ namespace Repositories
             if (string.IsNullOrWhiteSpace(activo.Modelo))
                 throw new ArgumentException("Modelo no puede ser vacío.", nameof(activo));
 
-            // Marcar DetalleItemOC como procesado si viene vinculado
-            if (activo.IdDetalleItemOC.HasValue)
+            // Marcar DetalleItemRemision como procesado si viene vinculado
+            if (activo.IdDetalleItemRemision.HasValue)
             {
-                var detalle = await _context.DetallesItemOC.FindAsync(activo.IdDetalleItemOC.Value);
+                var detalle = await _context.DetallesItemRemision.FindAsync(activo.IdDetalleItemRemision.Value);
                 if (detalle != null && !detalle.Procesado)
                 {
                     detalle.Procesado = true;
@@ -97,9 +97,9 @@ namespace Repositories
                 });
                 await _context.SaveChangesAsync();
 
-                await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
-                await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
-                return activo;
+await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
+            await _context.Entry(activo).Reference(a => a.Remision).LoadAsync();
+            return activo;
             }
             catch (DbUpdateException ex) when (ex.InnerException is PostgresException pg
                                                && pg.SqlState == PostgresErrorCodes.UniqueViolation)
@@ -108,7 +108,7 @@ namespace Repositories
                 _context.Entry(activo).State = EntityState.Added;
                 await _context.SaveChangesAsync();
                 await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
-                await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
+                await _context.Entry(activo).Reference(a => a.Remision).LoadAsync();
                 return activo;
             }
         }
@@ -129,8 +129,8 @@ namespace Repositories
             if (dto.IdCategoria != 0 && dto.IdCategoria != activo.IdCategoria)
                 activo.IdCategoria = dto.IdCategoria;
 
-            if (dto.IdOrden != 0 && dto.IdOrden != activo.IdOrden)
-                activo.IdOrden = dto.IdOrden;
+            if (dto.IdRemision != 0 && dto.IdRemision != activo.IdRemision)
+                activo.IdRemision = dto.IdRemision;
 
             if (!string.IsNullOrWhiteSpace(dto.Serial))
                 activo.Serial = dto.Serial.Trim();
@@ -180,9 +180,9 @@ namespace Repositories
                 await _context.SaveChangesAsync();
             }
 
-            await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
-            await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
-            return activo;
+await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
+                await _context.Entry(activo).Reference(a => a.Remision).LoadAsync();
+                return activo;
         }
 
         public async Task<bool> EliminarAsync(int id)
@@ -265,7 +265,7 @@ namespace Repositories
             await _context.SaveChangesAsync();
 
             await _context.Entry(activo).Reference(a => a.Categoria).LoadAsync();
-            await _context.Entry(activo).Reference(a => a.OrdenCompra).LoadAsync();
+            await _context.Entry(activo).Reference(a => a.Remision).LoadAsync();
 
             return activo;
         }

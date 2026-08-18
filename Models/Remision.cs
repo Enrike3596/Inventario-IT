@@ -2,14 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Models
 {
-    public class OrdenCompra
+    public class Remision
     {
         [Key]
-        public int IdOrden { get; set; }
-        public string NumeroOC { get; set; } = null!;
+        public int IdRemision { get; set; }
+        public string NumeroRemision { get; set; } = null!;
         public string Proveedor { get; set; } = null!;
-        public decimal Total { get; set; }
-        public string Observaciones { get; set; } = null!;
         public DateTime FechaCompra { get; set; } = DateTime.UtcNow;
         public bool Estado { get; set; } = true;
         public string? MotivoEdicion { get; set; }
@@ -18,6 +16,6 @@ namespace Models
         public int? CreadoPor { get; set; }
         public int? ModificadoPor { get; set; }
 
-        public virtual ICollection<ItemOC> ItemsOC { get; set; } = new List<ItemOC>();
+        public virtual ICollection<ItemRemision> ItemsRemision { get; set; } = new List<ItemRemision>();
     }
 }

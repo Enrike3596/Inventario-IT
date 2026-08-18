@@ -16,6 +16,6 @@ namespace Models
         public int? ModificadoPor { get; set; }
 
         public virtual ICollection<Activos> Activos { get; set; } = new List<Activos>();
-        public virtual ICollection<ItemOC> ItemsOC { get; set; } = new List<ItemOC>();
+        public virtual ICollection<ItemRemision> ItemsRemision { get; set; } = new List<ItemRemision>();
     }
 }

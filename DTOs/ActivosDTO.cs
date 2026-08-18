@@ -14,12 +14,12 @@ namespace DTOs
         [Required(ErrorMessage = "La categoría es obligatoria")]
         public int IdCategoria { get; set; }
 
-        [Required(ErrorMessage = "La orden de compra es obligatoria")]
-        public int IdOrden { get; set; }
+        [Required(ErrorMessage = "La remisión es obligatoria")]
+        public int IdRemision { get; set; }
 
-        public int? IdItemOC { get; set; }
+        public int? IdItemRemision { get; set; }
 
-        public int? IdDetalleItemOC { get; set; }
+        public int? IdDetalleItemRemision { get; set; }
 
         public string? CodigoActivo { get; set; }
 
@@ -42,8 +42,8 @@ namespace DTOs
         [Required(ErrorMessage = "La categoría es obligatoria")]
         public int IdCategoria { get; set; }
 
-        [Required(ErrorMessage = "La orden de compra es obligatoria")]
-        public int IdOrden { get; set; }
+        [Required(ErrorMessage = "La remisión es obligatoria")]
+        public int IdRemision { get; set; }
 
         [Required(ErrorMessage = "El serial es obligatorio")]
         public string Serial { get; set; } = null!;
@@ -68,10 +68,10 @@ namespace DTOs
         public int IdActivo { get; set; }
         public int IdCategoria { get; set; }
         public string? NombreCategoria { get; set; }
-        public int IdOrden { get; set; }
-        public string? NumeroOC { get; set; }
-        public int? IdItemOC { get; set; }
-        public int? IdDetalleItemOC { get; set; }
+        public int IdRemision { get; set; }
+        public string? NumeroRemision { get; set; }
+        public int? IdItemRemision { get; set; }
+        public int? IdDetalleItemRemision { get; set; }
         public string CodigoActivo { get; set; } = null!;
         public string Serial { get; set; } = null!;
         public string Marca { get; set; } = null!;

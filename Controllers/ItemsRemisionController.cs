@@ -7,21 +7,21 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdenesCompraController : ControllerBase
+    public class ItemsRemisionController : ControllerBase
     {
-        private readonly IOrdenCompraService _service;
+        private readonly IItemRemisionService _service;
 
-        public OrdenesCompraController(IOrdenCompraService service)
+        public ItemsRemisionController(IItemRemisionService service)
         {
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
+        [HttpGet("remision/{idRemision}")]
+        public async Task<IActionResult> ObtenerPorRemision(int idRemision)
         {
             try
             {
-                var data = await _service.ObtenerTodosAsync();
+                var data = await _service.ObtenerPorRemisionAsync(idRemision);
                 return Ok(ResponseHelper.Success(data));
             }
             catch (Exception ex)
@@ -35,7 +35,7 @@ namespace Controllers
         {
             try
             {
-                var data = await _service.ObtenerDetalleAsync(id);
+                var data = await _service.ObtenerPorIdAsync(id);
                 if (data == null)
                     return NotFound(ResponseHelper.NotFound());
                 return Ok(ResponseHelper.Success(data));
@@ -47,12 +47,12 @@ namespace Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] OrdenCompraCreateDTO dto)
+        public async Task<IActionResult> Crear([FromBody] ItemRemisionCreateDTO dto)
         {
             try
             {
                 var data = await _service.CrearAsync(dto);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = data.IdOrden }, ResponseHelper.Created(data));
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = data.IdItemRemision }, ResponseHelper.Created(data));
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Actualizar(int id, [FromBody] OrdenCompraUpdateDTO dto)
+        public async Task<IActionResult> Actualizar(int id, [FromBody] ItemRemisionUpdateDTO dto)
         {
             try
             {
@@ -84,25 +84,11 @@ namespace Controllers
                 var result = await _service.EliminarAsync(id);
                 if (!result)
                     return NotFound(ResponseHelper.NotFound());
-                return Ok(ResponseHelper.Success(null, "Orden de compra eliminada exitosamente."));
+                return Ok(ResponseHelper.Success(null, "Ítem eliminado exitosamente."));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ResponseHelper.Error(ex.Message));
-            }
-        }
-
-        [HttpPost("{id}/confirmar")]
-        public async Task<IActionResult> ConfirmarIngreso(int id)
-        {
-            try
-            {
-                var data = await _service.ConfirmarIngresoAsync(id);
-                return Ok(ResponseHelper.Success(data, "Ingreso confirmado. Activos creados exitosamente."));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ResponseHelper.BadRequest(ex.Message));
             }
         }
     }

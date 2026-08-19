@@ -36,6 +36,8 @@ namespace DTOs
         public string? NombreCanal { get; set; }
         public string? EstadoAnterior { get; set; }
         public string? EstadoNuevo { get; set; }
+        public string? Motivo { get; set; }
+        public string? EstadoDevolucion { get; set; }
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaModificacion { get; set; }
         public int? CreadoPor { get; set; }

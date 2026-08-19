@@ -2,8 +2,10 @@ using Data;
 using DTOs;
 using Enums;
 using Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Security.Claims;
 
 namespace Repositories
 {
@@ -23,10 +25,24 @@ namespace Repositories
     public class AsignacionUsuarioRepository : IAsignacionUsuarioRepository
     {
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AsignacionUsuarioRepository(AppDbContext context)
+        public AsignacionUsuarioRepository(AppDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(idClaim, out var id))
+                    return id;
+            }
+            return null;
         }
 
         public async Task<List<AsignacionUsuario>> ObtenerTodosAsync()
@@ -244,15 +260,19 @@ namespace Repositories
                     if (!string.IsNullOrWhiteSpace(asignacion.ObservacionDevolucion))
                         resumen += $" — Observación: {asignacion.ObservacionDevolucion}";
 
+                    var receptorId = dto.IdUsuarioRecibe ?? GetCurrentUserId() ?? asignacion.IdUsuarioEntrega;
+
                     _context.HistorialActivos.Add(new HistorialActivo
                     {
                         IdActivo = asignacion.IdActivo,
                         IdAsignacion = asignacion.IdAsignacion,
                         TipoMovimiento = TipoMovimiento.Devolucion,
                         FechaMovimiento = DateTime.UtcNow,
-                        IdUsuarioEntrega = asignacion.IdUsuarioEntrega,
+                        IdUsuarioEntrega = receptorId,
                         EstadoAnterior = EstadoActivo.Asignado.ToString(),
                         EstadoNuevo = EstadoActivo.Disponible.ToString(),
+                        Motivo = motivo,
+                        EstadoDevolucion = estado,
                         Observaciones = resumen
                     });
                     await _context.SaveChangesAsync();

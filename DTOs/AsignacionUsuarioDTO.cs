@@ -46,6 +46,8 @@ namespace DTOs
         public string EstadoDevolucion { get; set; } = null!;
 
         public string? ObservacionDevolucion { get; set; }
+
+        public int? IdUsuarioRecibe { get; set; }
     }
 
     public class AsignacionUsuarioResponseDTO

@@ -26,6 +26,8 @@ namespace Models
 
         public string? EstadoAnterior { get; set; }
         public string? EstadoNuevo { get; set; }
+        public string? Motivo { get; set; }
+        public string? EstadoDevolucion { get; set; }
         public string? Observaciones { get; set; }
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;

@@ -110,6 +110,8 @@ namespace Services
                 NombreCanal = asignacion?.CanalSolicitud?.Nombre,
                 EstadoAnterior = h.EstadoAnterior,
                 EstadoNuevo = h.EstadoNuevo,
+                Motivo = h.Motivo,
+                EstadoDevolucion = h.EstadoDevolucion,
                 FechaCreacion = h.FechaCreacion,
                 FechaModificacion = h.FechaModificacion,
                 CreadoPor = h.CreadoPor,

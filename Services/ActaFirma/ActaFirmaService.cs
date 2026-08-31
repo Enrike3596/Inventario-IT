@@ -311,7 +311,6 @@ namespace Services.ActaFirma
                 .Include(a => a.ActivoNav).ThenInclude(ac => ac!.Categoria)
                 .Include(a => a.Usuario)
                 .Include(a => a.UsuarioEntrega)
-                .Include(a => a.CanalSolicitud)
                 .Where(a => a.EstadoAsignacion == EstadoAsignacion.Activa);
 
             if (tipoDestino == "Usuario")
@@ -450,7 +449,7 @@ namespace Services.ActaFirma
                             }
                             DestCell(acta.TipoDestino == "Usuario" ? "Usuario" : "Parqueadero", nombreDestino ?? "—");
                             DestCell("Entrega", primera.UsuarioEntrega?.Nombre ?? "—");
-                            DestCell("Canal", primera.CanalSolicitud?.Nombre ?? "—");
+                            DestCell("Canal", ObtenerNombreCanal(primera.Canal));
                             DestCell("Reg. salida", primera.RegistroSalida);
                         });
 
@@ -663,6 +662,16 @@ namespace Services.ActaFirma
             }).GeneratePdf();
 
             return pdfBytes;
+        }
+
+        private static string ObtenerNombreCanal(TipoCanal canal)
+        {
+            return canal switch
+            {
+                TipoCanal.CorreoElectronico => "Correo Electrónico",
+                TipoCanal.SistemaDeTickets => "Sistema de Tickets",
+                _ => "Desconocido"
+            };
         }
     }
 }

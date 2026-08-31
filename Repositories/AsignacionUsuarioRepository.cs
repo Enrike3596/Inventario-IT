@@ -51,7 +51,6 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
-                .Include(a => a.CanalSolicitud)
                 .Include(a => a.UsuarioEntrega)
                 .Where(a => a.EstadoAsignacion == EstadoAsignacion.Activa)
                 .ToListAsync();
@@ -63,7 +62,6 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
-                .Include(a => a.CanalSolicitud)
                 .Include(a => a.UsuarioEntrega)
                 .FirstOrDefaultAsync(a => a.IdAsignacion == id);
         }
@@ -74,7 +72,6 @@ namespace Repositories
                 .Include(a => a.ActivoNav)
                 .Include(a => a.Usuario)
                 .Include(a => a.Parqueadero)
-                .Include(a => a.CanalSolicitud)
                 .Include(a => a.UsuarioEntrega)
                 .Where(a => a.IdActivo == idActivo)
                 .OrderByDescending(a => a.FechaAsignacion)
@@ -85,7 +82,6 @@ namespace Repositories
         {
             return await _context.AsignacionesUsuario
                 .Include(a => a.Usuario)
-                .Include(a => a.CanalSolicitud)
                 .Where(a => ids.Contains(a.IdAsignacion))
                 .ToListAsync();
         }
@@ -142,7 +138,6 @@ namespace Repositories
 
             await _context.Entry(asignacion).Reference(a => a.ActivoNav).LoadAsync();
             await _context.Entry(asignacion).Reference(a => a.Usuario).LoadAsync();
-            await _context.Entry(asignacion).Reference(a => a.CanalSolicitud).LoadAsync();
             await _context.Entry(asignacion).Reference(a => a.UsuarioEntrega).LoadAsync();
             return asignacion;
         }

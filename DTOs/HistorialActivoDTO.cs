@@ -33,7 +33,7 @@ namespace DTOs
         public int? IdAsignacion { get; set; }
         public string? NombreUsuarioAsignado { get; set; }
         public string? RegistroSalidaAsignacion { get; set; }
-        public string? NombreCanal { get; set; }
+        public TipoCanal? Canal { get; set; }
         public string? EstadoAnterior { get; set; }
         public string? EstadoNuevo { get; set; }
         public string? Motivo { get; set; }

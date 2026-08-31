@@ -26,7 +26,6 @@ namespace Data
         public DbSet<DetalleItemRemision> DetallesItemRemision { get; set; }
         public DbSet<Parqueadero> Parqueaderos { get; set; }
         public DbSet<Salida> Salidas { get; set; }
-        public DbSet<Canal> Canales { get; set; }
         public DbSet<DetalleSalida> DetallesSalida { get; set; }
         public DbSet<AsignacionUsuario> AsignacionesUsuario { get; set; }
         public DbSet<HistorialActivo> HistorialActivos { get; set; }
@@ -43,6 +42,7 @@ namespace Data
             var tipoMovimientoConverter = new EnumToStringConverter<TipoMovimiento>();
             var estadoGenericoConverter = new EnumToStringConverter<EstadoGenerico>();
             var estadoActaConverter = new EnumToStringConverter<EstadoActa>();
+            var tipoCanalConverter = new EnumToStringConverter<TipoCanal>();
 
             modelBuilder.Entity<Activos>(entity =>
             {
@@ -51,6 +51,7 @@ namespace Data
 
             modelBuilder.Entity<AsignacionUsuario>(entity =>
             {
+                entity.Property(e => e.Canal).HasConversion(tipoCanalConverter).HasMaxLength(20);
                 entity.Property(e => e.EstadoAsignacion).HasConversion(estadoAsignacionConverter).HasMaxLength(20);
             });
 
@@ -85,11 +86,6 @@ namespace Data
             });
 
             // Soft-delete: Estado por defecto activo
-            modelBuilder.Entity<Canal>(entity =>
-            {
-                entity.Property(e => e.Estado).HasDefaultValue(true);
-            });
-
             modelBuilder.Entity<Remision>(entity =>
             {
                 entity.Property(e => e.Estado).HasDefaultValue(true);
@@ -144,12 +140,6 @@ namespace Data
 
             // Configuración CategoriaActivo - Nombre único
             modelBuilder.Entity<CategoriaActivo>(entity =>
-            {
-                entity.HasIndex(c => c.Nombre).IsUnique();
-            });
-
-            // Configuración Canal - Nombre único
-            modelBuilder.Entity<Canal>(entity =>
             {
                 entity.HasIndex(c => c.Nombre).IsUnique();
             });
@@ -214,13 +204,6 @@ namespace Data
                 .WithMany(p => p.AsignacionesUsuario)
                 .HasForeignKey(au => au.IdParqueadero)
                 .OnDelete(DeleteBehavior.SetNull);
-
-            // Relaciones AsignacionUsuario -> Canal
-            modelBuilder.Entity<AsignacionUsuario>()
-                .HasOne(au => au.CanalSolicitud)
-                .WithMany(c => c.Asignaciones)
-                .HasForeignKey(au => au.IdCanal)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // Relaciones AsignacionUsuario -> Usuario entrega
             modelBuilder.Entity<AsignacionUsuario>()
@@ -325,7 +308,6 @@ namespace Data
             ConfigureAuditRelationships<Activos>(modelBuilder);
             ConfigureAuditRelationships<ActaFirma>(modelBuilder);
             ConfigureAuditRelationships<AsignacionUsuario>(modelBuilder);
-            ConfigureAuditRelationships<Canal>(modelBuilder);
             ConfigureAuditRelationships<CategoriaActivo>(modelBuilder);
             ConfigureAuditRelationships<DetalleItemRemision>(modelBuilder);
             ConfigureAuditRelationships<DetalleSalida>(modelBuilder);

@@ -18,8 +18,7 @@ namespace Models
         [ForeignKey("Parqueadero")]
         public int? IdParqueadero { get; set; }
 
-        [ForeignKey("CanalSolicitud")]
-        public int IdCanal { get; set; }
+        public TipoCanal Canal { get; set; }
 
         [ForeignKey("UsuarioEntrega")]
         public int IdUsuarioEntrega { get; set; }
@@ -42,7 +41,6 @@ namespace Models
         public virtual Activos ActivoNav { get; set; } = null!;
         public virtual Usuarios Usuario { get; set; } = null!;
         public virtual Parqueadero? Parqueadero { get; set; }
-        public virtual Canal CanalSolicitud { get; set; } = null!;
         public virtual Usuarios UsuarioEntrega { get; set; } = null!;
     }
 }

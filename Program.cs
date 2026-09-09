@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -112,6 +113,10 @@ var jwtKey = builder.Configuration["Jwt:Key"]!;
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]!;
 var jwtAudience = builder.Configuration["Jwt:Audience"]!;
 
+// La clave firma todos los JWT: si es débil o falta, los tokens son falsificables.
+if (string.IsNullOrWhiteSpace(jwtKey) || Encoding.UTF8.GetByteCount(jwtKey) < 32)
+    throw new InvalidOperationException("Jwt:Key debe configurarse con al menos 256 bits (32 caracteres).");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -123,23 +128,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtAudience,
+            // Ventana de tolerancia del reloj corta: evita reutilizar tokens recién expirados.
+            ClockSkew = TimeSpan.FromMinutes(2),
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtKey))
         };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-                if (!string.IsNullOrEmpty(accessToken))
-                    context.Token = accessToken;
-                return Task.CompletedTask;
-            }
-        };
+        // Nota: no se acepta el JWT por query string (access_token) para que el token
+        // no quede en URLs, logs de servidor/proxy ni historial del navegador.
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    // Por defecto todo endpoint exige usuario autenticado; lo público se marca
+    // explícitamente con [AllowAnonymous] (login, reset, firma pública de actas).
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddCors(options =>
 {

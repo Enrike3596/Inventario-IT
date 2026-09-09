@@ -1,12 +1,15 @@
+using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DTOs;
 using Enums;
 using Helpers;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Repositories;
+using Services.Emails;
 
 namespace Services
 {
@@ -19,21 +22,34 @@ namespace Services
         Task<UsuarioResponseDTO?> ActualizarAsync(int id, UsuarioUpdateDTO dto);
         Task<bool> EliminarAsync(int id);
         Task<TokenResponseDTO> LoginAsync(LoginDTO dto);
-        Task<string> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto);
+        Task<string?> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto);
         Task RestablecerContrasenaAsync(RestablecerContrasenaDTO dto);
     }
 
     public class UsuarioService : IUsuarioService
     {
+        // Tokens de restablecimiento ya consumidos (un solo uso). Caché en memoria:
+        // válido para instancia única; con múltiples réplicas se requiere store distribuido.
+        private static readonly ConcurrentDictionary<string, byte> _tokensRestablecimientoUsados = new();
+
         private readonly IUsuarioRepository _repo;
         private readonly IRolRepository _rolRepo;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<UsuarioService> _logger;
+        private readonly IEmailSender _emailSender;
 
-        public UsuarioService(IUsuarioRepository repo, IRolRepository rolRepo, IConfiguration configuration)
+        public UsuarioService(
+            IUsuarioRepository repo,
+            IRolRepository rolRepo,
+            IConfiguration configuration,
+            ILogger<UsuarioService> logger,
+            IEmailSender emailSender)
         {
             _repo = repo;
             _rolRepo = rolRepo;
             _configuration = configuration;
+            _logger = logger;
+            _emailSender = emailSender;
         }
 
         public async Task<List<UsuarioResponseDTO>> ObtenerTodosAsync()
@@ -89,18 +105,33 @@ namespace Services
 
         public async Task<TokenResponseDTO> LoginAsync(LoginDTO dto)
         {
+            // Mensaje único en todos los fallos para no revelar si el correo existe,
+            // si está inactivo o si la contraseña falló (anti-enumeración).
+            const string mensajeGenerico = "Credenciales inválidas.";
             var usuario = await _repo.ObtenerPorCorreoAsync(dto.Email);
             if (usuario == null)
-                throw new UnauthorizedAccessException("Credenciales inválidas.");
+            {
+                _logger.LogWarning("Login fallido: correo no registrado ({Correo}).", dto.Email);
+                throw new UnauthorizedAccessException(mensajeGenerico);
+            }
 
             if (usuario.EstadoUsuario != EstadoUsuario.Activo)
-                throw new UnauthorizedAccessException("El usuario se encuentra inactivo.");
+            {
+                _logger.LogWarning("Login fallido: usuario inactivo ({Correo}).", dto.Email);
+                throw new UnauthorizedAccessException(mensajeGenerico);
+            }
 
             if (usuario.Rol?.Tipo == "usuario")
-                throw new UnauthorizedAccessException("Este usuario no tiene acceso al sistema.");
+            {
+                _logger.LogWarning("Login fallido: rol sin acceso ({Correo}).", dto.Email);
+                throw new UnauthorizedAccessException(mensajeGenerico);
+            }
 
             if (!PasswordHelper.Verify(dto.Password, usuario.Contraseña))
-                throw new UnauthorizedAccessException("Credenciales inválidas.");
+            {
+                _logger.LogWarning("Login fallido: contraseña incorrecta ({Correo}).", dto.Email);
+                throw new UnauthorizedAccessException(mensajeGenerico);
+            }
 
             var expira = DateTime.UtcNow.AddHours(8);
 
@@ -112,14 +143,16 @@ namespace Services
             };
         }
 
-        public async Task<string> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto)
+        public async Task<string?> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto)
         {
+            // Sin excepciones para correo inexistente o inactivo: el controller responde
+            // siempre igual para no permitir enumeración de cuentas.
             var usuario = await _repo.ObtenerPorCorreoAsync(dto.Email);
-            if (usuario == null)
-                throw new KeyNotFoundException("No se encontró un usuario con ese correo.");
-
-            if (usuario.EstadoUsuario != EstadoUsuario.Activo)
-                throw new UnauthorizedAccessException("El usuario se encuentra inactivo.");
+            if (usuario == null || usuario.EstadoUsuario != EstadoUsuario.Activo)
+            {
+                _logger.LogWarning("Solicitud de restablecimiento para correo no válido o inactivo.");
+                return null;
+            }
 
             var expira = DateTime.UtcNow.AddHours(1);
 
@@ -131,7 +164,8 @@ namespace Services
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Correo),
-                new Claim("propósito", "restablecimiento_contraseña")
+                new Claim("propósito", "restablecimiento_contraseña"),
+                new Claim("jti", Guid.NewGuid().ToString())
             };
 
             var token = new JwtSecurityToken(
@@ -142,11 +176,45 @@ namespace Services
                 signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenTexto = new JwtSecurityTokenHandler().WriteToken(token);
+            await EnviarCorreoRestablecimientoAsync(usuario.Correo, tokenTexto);
+            return tokenTexto;
+        }
+
+        private async Task EnviarCorreoRestablecimientoAsync(string correo, string token)
+        {
+            try
+            {
+                var baseUrl = _configuration["PasswordReset:FrontendBaseUrl"]
+                    ?? _configuration["FirmaElectronica:FrontendBaseUrl"];
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    _logger.LogWarning("No se envió correo de restablecimiento: falta PasswordReset:FrontendBaseUrl.");
+                    return;
+                }
+
+                var enlace = $"{baseUrl.TrimEnd('/')}/reset-password?token={Uri.EscapeDataString(token)}";
+                await _emailSender.SendAsync(
+                    correo,
+                    "Restablecimiento de contraseña — Inventario TI",
+                    $"<p>Recibimos una solicitud para restablecer tu contraseña.</p>" +
+                    $"<p><a href=\"{enlace}\">Haz clic aquí para definir una nueva contraseña</a>. " +
+                    $"El enlace vence en 1 hora y solo puede usarse una vez.</p>" +
+                    $"<p>Si no solicitaste este cambio, ignora este mensaje.</p>");
+            }
+            catch (Exception ex)
+            {
+                // No se propaga: la respuesta al cliente debe ser idéntica haya o no correo.
+                _logger.LogError(ex, "Error al enviar correo de restablecimiento.");
+            }
         }
 
         public async Task RestablecerContrasenaAsync(RestablecerContrasenaDTO dto)
         {
+            // Un solo uso: rechaza tokens ya consumidos antes de validarlos.
+            if (!_tokensRestablecimientoUsados.TryAdd(dto.Token, 0))
+                throw new ArgumentException("El token ya fue utilizado.");
+
             var handler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
@@ -161,7 +229,8 @@ namespace Services
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidAudience = _configuration["Jwt:Audience"],
-                    IssuerSigningKey = key
+                    IssuerSigningKey = key,
+                    ClockSkew = TimeSpan.FromMinutes(2)
                 }, out _);
 
                 var prop = principal.FindFirst("propósito")?.Value;
@@ -194,6 +263,10 @@ namespace Services
                 new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Correo),
                 new Claim(ClaimTypes.Name, usuario.Nombre),
+                // El claim de rol lleva el Tipo (super_admin, coordinador, ...) para que
+                // [Authorize(Roles=...)] se evalúe en servidor; se conserva el Nombre
+                // por compatibilidad con sesiones ya emitidas.
+                new Claim(ClaimTypes.Role, usuario.Rol?.Tipo ?? ""),
                 new Claim(ClaimTypes.Role, usuario.Rol?.Nombre ?? ""),
             };
 

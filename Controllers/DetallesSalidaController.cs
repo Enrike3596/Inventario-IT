@@ -1,4 +1,5 @@
 using Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -6,6 +7,7 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DetallesSalidaController : ControllerBase
     {
         private readonly IDetalleSalidaService _service;

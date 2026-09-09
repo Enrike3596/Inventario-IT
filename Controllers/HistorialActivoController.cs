@@ -1,4 +1,5 @@
 using Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -6,6 +7,8 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    // Historial de solo lectura: solo expone GET; cualquier usuario autenticado puede consultar.
+    [Authorize]
     public class HistorialActivoController : ControllerBase
     {
         private readonly IHistorialActivoService _service;

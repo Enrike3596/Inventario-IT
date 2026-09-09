@@ -33,7 +33,7 @@ namespace DTOs
         public string Token { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La nueva contraseña es obligatoria")]
-        [MinLength(6, ErrorMessage = "Mínimo 6 caracteres")]
+        [MinLength(8, ErrorMessage = "Mínimo 8 caracteres")]
         [JsonPropertyName("password")]
         public string NuevaContrasena { get; set; } = string.Empty;
     }

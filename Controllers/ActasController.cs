@@ -8,6 +8,7 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ActasController : ControllerBase
     {
         private readonly IActaFirmaService _service;

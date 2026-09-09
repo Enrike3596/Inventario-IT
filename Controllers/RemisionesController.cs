@@ -11,6 +11,7 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RemisionesController : ControllerBase
     {
         private const string ContenedorDocumentos = "remisiones";

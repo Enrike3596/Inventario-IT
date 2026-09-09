@@ -12,10 +12,12 @@ namespace Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUsuarioService _usuarioService;
+        private readonly IWebHostEnvironment _env;
 
-        public AuthController(IUsuarioService usuarioService)
+        public AuthController(IUsuarioService usuarioService, IWebHostEnvironment env)
         {
             _usuarioService = usuarioService;
+            _env = env;
         }
 
         [HttpPost("login")]
@@ -42,13 +44,20 @@ namespace Controllers
         }
 
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> SolicitarRestablecimiento([FromBody] SolicitarRestablecimientoDTO dto)
         {
+            // Respuesta idéntica exista o no el correo: evita enumeración de cuentas.
+            // El token solo se expone en Development para pruebas; en producción viaja por email.
+            const string mensaje = "Si el correo existe, recibirás las instrucciones.";
             var token = await _usuarioService.SolicitarRestablecimientoAsync(dto);
-            return Ok(ResponseHelper.Success(new { token }, "Si el correo existe, recibirás las instrucciones."));
+            if (_env.IsDevelopment() && token != null)
+                return Ok(ResponseHelper.Success(new { token }, mensaje));
+            return Ok(ResponseHelper.Success(null, mensaje));
         }
 
         [HttpPost("reset-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> RestablecerContrasena([FromBody] RestablecerContrasenaDTO dto)
         {
             await _usuarioService.RestablecerContrasenaAsync(dto);

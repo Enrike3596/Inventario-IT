@@ -1,4 +1,5 @@
 using DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services;
@@ -7,6 +8,7 @@ namespace Controllers
 {
     [ApiController]
     [Route("api/reportes")]
+    [Authorize]
     public class ReportesController : ControllerBase
     {
         private readonly ReporteInventarioService _reporteService;

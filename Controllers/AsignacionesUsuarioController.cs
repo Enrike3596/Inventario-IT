@@ -1,5 +1,6 @@
 using DTOs;
 using Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -7,6 +8,7 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AsignacionesUsuarioController : ControllerBase
     {
         private readonly IAsignacionUsuarioService _service;

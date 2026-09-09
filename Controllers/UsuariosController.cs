@@ -1,5 +1,6 @@
 using DTOs;
 using Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -7,6 +8,7 @@ namespace Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioService _service;
@@ -63,6 +65,7 @@ namespace Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "super_admin,coordinador")]
         public async Task<IActionResult> Crear([FromBody] UsuarioCreateDTO dto)
         {
             try
@@ -77,6 +80,7 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "super_admin,coordinador")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] UsuarioUpdateDTO dto)
         {
             try
@@ -93,6 +97,7 @@ namespace Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "super_admin,coordinador")]
         public async Task<IActionResult> Eliminar(int id)
         {
             try

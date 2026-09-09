@@ -2,6 +2,7 @@ using DTOs;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Services.ActaFirma;
 
 namespace Controllers
@@ -87,6 +88,7 @@ namespace Controllers
         }
 
         [AllowAnonymous]
+        [EnableRateLimiting("firma-publica")]
         [HttpGet("firmar/{token}")]
         public async Task<IActionResult> ObtenerParaFirma(string token)
         {
@@ -104,6 +106,7 @@ namespace Controllers
         }
 
         [AllowAnonymous]
+        [EnableRateLimiting("firma-publica")]
         [HttpPost("firmar/{token}")]
         public async Task<IActionResult> Firmar(string token, [FromBody] FirmaRequestDTO dto)
         {

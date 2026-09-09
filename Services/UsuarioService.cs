@@ -5,6 +5,7 @@ using System.Text;
 using DTOs;
 using Enums;
 using Helpers;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -37,19 +38,31 @@ namespace Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<UsuarioService> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IMemoryCache _cache;
+
+        private const int MaxIntentosFallidos = 5;
+        private static readonly TimeSpan BloqueoPorIntentos = TimeSpan.FromMinutes(15);
+
+        private static string ClaveBloqueo(string correo) =>
+            $"login-bloqueo:{correo.Trim().ToLowerInvariant()}";
+
+        private static string ClaveIntentos(string correo) =>
+            $"login-intentos:{correo.Trim().ToLowerInvariant()}";
 
         public UsuarioService(
             IUsuarioRepository repo,
             IRolRepository rolRepo,
             IConfiguration configuration,
             ILogger<UsuarioService> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IMemoryCache cache)
         {
             _repo = repo;
             _rolRepo = rolRepo;
             _configuration = configuration;
             _logger = logger;
             _emailSender = emailSender;
+            _cache = cache;
         }
 
         public async Task<List<UsuarioResponseDTO>> ObtenerTodosAsync()
@@ -127,11 +140,23 @@ namespace Services
                 throw new UnauthorizedAccessException(mensajeGenerico);
             }
 
+            // Bloqueo temporal tras intentos fallidos (anti fuerza bruta por cuenta).
+            if (_cache.TryGetValue(ClaveBloqueo(dto.Email), out var bloqueoObj)
+                && bloqueoObj is DateTimeOffset bloqueadoHasta
+                && bloqueadoHasta > DateTimeOffset.UtcNow)
+            {
+                _logger.LogWarning("Login bloqueado por intentos fallidos ({Correo}).", dto.Email);
+                throw new UnauthorizedAccessException(mensajeGenerico);
+            }
+
             if (!PasswordHelper.Verify(dto.Password, usuario.Contraseña))
             {
                 _logger.LogWarning("Login fallido: contraseña incorrecta ({Correo}).", dto.Email);
+                RegistrarIntentoFallido(dto.Email);
                 throw new UnauthorizedAccessException(mensajeGenerico);
             }
+
+            _cache.Remove(ClaveIntentos(dto.Email));
 
             var expira = DateTime.UtcNow.AddHours(8);
 
@@ -141,6 +166,24 @@ namespace Services
                 Expira = expira,
                 Usuario = MapToDTO(usuario)
             };
+        }
+
+        private void RegistrarIntentoFallido(string correo)
+        {
+            var claveIntentos = ClaveIntentos(correo);
+            var intentos = _cache.Get<int?>(claveIntentos) ?? 0;
+            intentos++;
+
+            if (intentos >= MaxIntentosFallidos)
+            {
+                _cache.Set(ClaveBloqueo(correo), DateTimeOffset.UtcNow.Add(BloqueoPorIntentos), BloqueoPorIntentos);
+                _cache.Remove(claveIntentos);
+                _logger.LogWarning("Cuenta bloqueada 15 min por {Intentos} intentos fallidos ({Correo}).", intentos, correo);
+            }
+            else
+            {
+                _cache.Set(claveIntentos, intentos, BloqueoPorIntentos);
+            }
         }
 
         public async Task<string?> SolicitarRestablecimientoAsync(SolicitarRestablecimientoDTO dto)

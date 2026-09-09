@@ -3,6 +3,7 @@ using DTOs;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Services;
 
 namespace Controllers
@@ -22,6 +23,7 @@ namespace Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             var result = await _usuarioService.LoginAsync(dto);
@@ -45,6 +47,7 @@ namespace Controllers
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> SolicitarRestablecimiento([FromBody] SolicitarRestablecimientoDTO dto)
         {
             // Respuesta idéntica exista o no el correo: evita enumeración de cuentas.
@@ -58,6 +61,7 @@ namespace Controllers
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
+        [EnableRateLimiting("auth")]
         public async Task<IActionResult> RestablecerContrasena([FromBody] RestablecerContrasenaDTO dto)
         {
             await _usuarioService.RestablecerContrasenaAsync(dto);
